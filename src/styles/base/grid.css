@@ -1,27 +1,22 @@
 .grid {
   --columns: 6;
-  --padding: 1.2rem;
-  --gap: 1.2rem;
-  --maxWidth: 250000px;
+  --padding: 4rem;
+  --gap: 0.8rem;
 
   display: grid;
   margin-inline: auto;
+  max-width: calc(60rem + (var(--padding) * 2));
   width: 100%;
   gap: var(--gap);
   grid-template-columns:
-    calc(var(--padding) - var(--gap)) repeat(var(--columns), minmax(0, 1fr))
-    calc(var(--padding) - var(--gap));
+    var(--padding) repeat(var(--columns), minmax(0, 1fr))
+    var(--padding);
   row-gap: 0;
   grid-auto-rows: min-content;
 
-  @media (min-width: 768px) {
-    --columns: 12;
-    --padding: 1.6rem;
-    --gap: 1.6rem;
-  }
-
   .subgrid {
     display: grid;
+    grid-column: 2 / -2;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
     gap: 0 var(--gap);
   }

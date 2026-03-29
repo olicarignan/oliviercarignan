@@ -5,10 +5,5 @@
 @import "./base/fonts.css";
 @import "./base/grid.css";
 
-@import "./pages/work.css";
-@import "./pages/info.css";
-@import "./pages/404.css";
-
-@import "./components/nav.css";
 @import "./components/layout.css";
-@import "./components/preloader.css";
+@import "./components/home.css";
