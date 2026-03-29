@@ -1,0 +1,27 @@
+.icon-link {
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  gap: 0.8rem;
+
+  .icon-link__icon {
+    display: inline-flex;
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+    margin-left: -2rem;
+    opacity: 0;
+    transition: margin-left 0.3s cubic-bezier(0, 0.55, 0.45, 1),
+                opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1);
+
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  &:hover .icon-link__icon {
+    margin-left: 0;
+    opacity: 1;
+  }
+}

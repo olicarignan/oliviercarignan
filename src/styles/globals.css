@@ -6,4 +6,6 @@
 @import "./base/grid.css";
 
 @import "./components/layout.css";
+@import "./components/nav.css";
 @import "./components/home.css";
+@import "./components/icon-link.css";

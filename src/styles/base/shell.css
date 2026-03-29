@@ -4,7 +4,6 @@
 
 html,
 body {
-  overflow-x: hidden;
   font-family: var(--font-sans);
   font-weight: 375 !important;
   color: var(--text-color);
@@ -13,11 +12,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 html {
@@ -25,6 +19,7 @@ html {
 }
 
 body {
+  overflow-x: hidden;
   font-size: 1.6rem;
   line-height: 1.44;
   margin: 0;
@@ -39,4 +34,8 @@ body {
   text-shadow: 0 0 0.75rem var(--text-color);
   color: transparent;
   background-color: transparent;
+}
+
+.app {
+  padding: 6rem 0;
 }
