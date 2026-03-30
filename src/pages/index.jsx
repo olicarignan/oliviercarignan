@@ -8,6 +8,7 @@ import { getHome } from "@/gql/queries";
 import { Slider } from "@/components/Slider";
 
 
+
 const fadeIn = {
   initial: { opacity: 0, y: 8, filter: "blur(4px)" },
   animate: {
