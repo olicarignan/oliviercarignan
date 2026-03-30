@@ -1,5 +1,5 @@
 export async function fetchDato(query, variables = {}) {
-  const res = await fetch("https://graphql.datocms.com/", {
+  const res = await fetch(process.env.NEXT_PUBLIC_DATO_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

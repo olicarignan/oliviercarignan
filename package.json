@@ -5,20 +5,19 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "next dev --turbopack",
-    "build": "next build && opennextjs-cloudflare build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "lottie-react": "^2.4.1",
     "motion": "^12.19.1",
-    "next": "15.3.9",
+    "next": "16.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@opennextjs/cloudflare": "^1.18.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.4"
   }
