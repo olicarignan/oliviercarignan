@@ -36,19 +36,19 @@ export default function Home({ data }) {
 
         <Slider projects={data.home2.projects} />
 
-        {/* <motion.div className="clients" variants={fadeIn}>
+        <motion.div className="clients" variants={fadeIn}>
           <h3>Selected Clients</h3>
           <p>
             Apple, WØRKS, Evenko, RTINGS.com, ARC Health, LG2, POP Montréal, Rounder
           </p>
-        </motion.div>*/}
+        </motion.div>
         <motion.div className="connect" variants={fadeIn}>
           <h3>Connect</h3>
           <ul>
-            <li><a href="#">Email</a></li>
-            <li><a href="#">Github</a></li>
-            <li><a href="#">Are.na</a></li>
-            <li><a href="#">LinkedIn</a></li>
+            <li><IconLink isExternal={false} href={"hi@oliviercarignan.com"} children={"Email"} /></li>
+            <li><IconLink isExternal={true} href="https://github.com/olicarignan" children={"Github"} /></li>
+            <li><IconLink isExternal={true} href="https://www.are.na/olivier-carignan/" children={"Are.na"} /></li>
+            <li><IconLink isExternal={true} href="https://www.linkedin.com/in/olivier-carignan/" children={"LinkedIn"} /></li>
           </ul>
         </motion.div>
       </main>

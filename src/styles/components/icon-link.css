@@ -3,6 +3,7 @@
   vertical-align: middle;
   align-items: center;
   gap: 0.8rem;
+  cursor: pointer;
 
   .icon-link__icon {
     display: inline-flex;
@@ -20,8 +21,20 @@
     }
   }
 
+  .icon--check {
+    display: none;
+  }
+
   &:hover .icon-link__icon {
     margin-left: 0;
     opacity: 1;
+  }
+
+  &.copied .icon--check {
+    display: inline-flex;
+  }
+
+  &.copied .icon--copy {
+    display: none;
   }
 }
