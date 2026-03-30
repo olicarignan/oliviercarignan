@@ -49,6 +49,12 @@ export function Slider({ projects }) {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollLeft = 0;
+  }, [layout.inset]);
+
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
