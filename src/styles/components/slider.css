@@ -21,8 +21,12 @@
     scroll-snap-align: start;
 
     img {
-      border-radius: 32px;
+      border-radius: 16px;
       corner-shape: squircle;
+
+      @media (min-width: 600px) {
+        border-radius: 32px;
+      }
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
