@@ -2,5 +2,9 @@
   "name": "v2",
   "compatibility_flags": ["nodejs_compat"],
   "compatibility_date": "2024-09-23",
-  "pages_build_output_dir": ".open-next/assets"
+  "pages_build_output_dir": ".open-next/assets",
+  "vars": {
+    "NEXT_PUBLIC_DATO_TOKEN": "8fb37eae3fa6dcf1e011d5ff9f4c8e",
+    "NEXT_PUBLIC_DATO_URL": "https://graphql.datocms.com/"
+  }
 }
