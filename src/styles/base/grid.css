@@ -1,11 +1,11 @@
 .grid {
-  --columns: 6;
+  --columns: 4;
   --padding: 4rem;
   --gap: 0.8rem;
 
   display: grid;
   margin-inline: auto;
-  max-width: calc(60rem + (var(--padding) * 2));
+  max-width: calc(42rem + (var(--padding) * 2));
   width: 100%;
   gap: var(--gap);
   grid-template-columns:

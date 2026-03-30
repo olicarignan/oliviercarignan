@@ -36,12 +36,12 @@ export default function Home({ data }) {
 
         <Slider projects={data.home2.projects} />
 
-        <motion.div className="clients" variants={fadeIn}>
+        {/* <motion.div className="clients" variants={fadeIn}>
           <h3>Selected Clients</h3>
           <p>
             Apple, WØRKS, Evenko, RTINGS.com, ARC Health, LG2, POP Montréal, Rounder
           </p>
-        </motion.div>
+        </motion.div>*/}
         <motion.div className="connect" variants={fadeIn}>
           <h3>Connect</h3>
           <ul>

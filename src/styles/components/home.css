@@ -10,8 +10,4 @@
       margin-bottom: 2.4rem;
     }
   }
-
-  @media (min-width: 680px) {
-    grid-column: 2 / -2;
-  }
 }
