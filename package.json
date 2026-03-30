@@ -5,7 +5,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "next dev --turbopack",
-    "build": "next build && opennextjs-cloudflare",
+    "build": "next build && opennextjs-cloudflare build",
     "start": "next start",
     "lint": "next lint"
   },
