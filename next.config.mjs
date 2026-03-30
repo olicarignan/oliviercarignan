@@ -2,10 +2,7 @@
 const nextConfig = {
   transpilePackages: ["gsap"],
   reactStrictMode: true,
-  webpack: (config) => {
-    config.cache.compression = "brotli";
-    return config;
-  },
+  turbopack: {},
 };
 
 export default nextConfig;
