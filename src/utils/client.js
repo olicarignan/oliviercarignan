@@ -1,9 +1,3 @@
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_DATO_URL;
-const HEADERS = {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${process.env.NEXT_PUBLIC_DATO_TOKEN}`,
-};
-
 /**
  * Helper function to make a GraphQL request using fetch with Next.js cache control.
  * @param {string} query - GraphQL query string
@@ -12,9 +6,12 @@ const HEADERS = {
  */
 
 export const fetchGraphQL = async (query, variables) => {
-  const res = await fetch(GRAPHQL_ENDPOINT, {
+  const res = await fetch(process.env.NEXT_PUBLIC_DATO_URL, {
     method: "POST",
-    headers: HEADERS,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_DATO_TOKEN}`,
+    },
     body: JSON.stringify({ query, variables }),
   });
 
