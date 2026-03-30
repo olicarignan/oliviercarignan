@@ -6,7 +6,7 @@
  */
 
 export const fetchGraphQL = async (query, variables) => {
-  const res = await fetch(process.env.NEXT_PUBLIC_DATO_URL, {
+  const res = await fetch("https://graphql.datocms.com/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
