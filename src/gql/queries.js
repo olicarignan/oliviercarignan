@@ -6,10 +6,16 @@ export const getHome = `
         id
         typeYear
         featuredImage {
-          alt
-          url
-          height
-          width
+          responsiveImage(imgixParams: { auto: format, q: 75 }) {
+            srcSet
+            webpSrcSet
+            sizes
+            src
+            width
+            height
+            alt
+            base64
+          }
         }
       }
     }

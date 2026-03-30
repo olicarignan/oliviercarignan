@@ -1,5 +1,3 @@
-"use client";
-
 import { motion } from "motion/react";
 import Layout from "@/layouts/Layout";
 import { IconLink } from "@/components/IconLink";

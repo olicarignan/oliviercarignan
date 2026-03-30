@@ -55,6 +55,17 @@ export function Slider({ projects }) {
     track.scrollLeft = 0;
   }, [layout.inset]);
 
+  const scrollToIndex = useCallback(
+    (index) => {
+      const track = trackRef.current;
+      if (!track || !layout.itemWidth) return;
+      const items = track.querySelectorAll(".slider__item");
+      if (!items[index]) return;
+      items[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    },
+    [layout.itemWidth]
+  );
+
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -89,6 +100,21 @@ export function Slider({ projects }) {
     return () => track.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowRight") {
+        const next = Math.min(activeIndex + 1, projects.length - 1);
+        if (next !== activeIndex) scrollToIndex(next);
+      } else if (e.key === "ArrowLeft") {
+        const prev = Math.max(activeIndex - 1, 0);
+        if (prev !== activeIndex) scrollToIndex(prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeIndex, projects.length, scrollToIndex]);
+
   const active = projects[activeIndex];
 
   return (
@@ -102,16 +128,29 @@ export function Slider({ projects }) {
           scrollPaddingLeft: `${layout.inset}px`,
         }}
       >
-        {projects.map((project) => (
-          <motion.div
-            key={project.id}
-            className="slider__item"
-            variants={itemFadeIn}
-            style={{ width: `${layout.itemWidth}px` }}
-          >
-            <img src={project.featuredImage.url} alt={project.title} />
-          </motion.div>
-        ))}
+        {projects.map((project, i) => {
+          const img = project.featuredImage.responsiveImage;
+          return (
+            <motion.div
+              key={project.id}
+              className="slider__item"
+              variants={itemFadeIn}
+              style={{ width: `${layout.itemWidth}px` }}
+            >
+              <picture>
+                <source srcSet={img.webpSrcSet} type="image/webp" />
+                <img
+                  src={img.src}
+                  srcSet={img.srcSet}
+                  alt={img.alt || project.title}
+                  fetchPriority={i === 0 ? "high" : undefined}
+                  loading={i <= 1 ? "eager" : "lazy"}
+                  style={img.base64 ? { backgroundImage: `url(${img.base64})`, backgroundSize: "cover" } : undefined}
+                />
+              </picture>
+            </motion.div>
+          );
+        })}
       </motion.div>
       <motion.div
         className="slider__meta"
