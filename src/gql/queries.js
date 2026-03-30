@@ -1,6 +1,6 @@
 export const getHome = `
   query GetHome {
-  home2 {
+  home {
       projects {
         title
         id
