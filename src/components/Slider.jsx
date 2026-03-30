@@ -145,7 +145,13 @@ export function Slider({ projects }) {
                   alt={img.alt || project.title}
                   fetchPriority={i === 0 ? "high" : undefined}
                   loading={i <= 1 ? "eager" : "lazy"}
-                  style={img.base64 ? { backgroundImage: `url(${img.base64})`, backgroundSize: "cover" } : undefined}
+                  decoding={i <= 1 ? "sync" : "async"}
+                  style={img.base64 ? {
+                    backgroundImage: `url(${img.base64})`,
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                  } : undefined}
                 />
               </picture>
             </motion.div>
