@@ -1,11 +1,5 @@
 :root {
-  color-scheme: light dark;
-
-  --bg-white: #fcfbf8;
-  --bg-black: #1b1917;
-  --text-white: #d2d4db;
-  --text-black: #1b1917;
-
-  --background-color: light-dark(var(--bg-white), var(--bg-black));
-  --text-color: light-dark(var(--text-black), var(--text-white));
+  --background-color: #fafafa;
+  --text-color: #131718;
+  --accent-color: #a3a3a3;
 }
