@@ -6,13 +6,16 @@ import { CheckIcon } from "@/components/CheckIcon";
 
 export const IconLink = ({ href, children, isExternal }) => {
 
-  const [isCopied, setIsCopied] = useState(false);
+  const [copyState, setCopyState] = useState("idle");
 
   const copyTextToClipboard = async (textToCopy) => {
     try {
       await navigator.clipboard.writeText(textToCopy);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+      setCopyState("copied");
+      setTimeout(() => {
+        setCopyState("copied-out");
+        setTimeout(() => setCopyState("idle"), 500);
+      }, 750);
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
@@ -34,7 +37,7 @@ export const IconLink = ({ href, children, isExternal }) => {
 
   return (
     <div
-      className={`icon-link ${isCopied ? " copied" : ""}`}
+      className={`icon-link${copyState !== "idle" ? ` ${copyState}` : ""}`}
       onClick={() => copyTextToClipboard(href)}
     >
       <span className="icon-link__icon icon--copy"><CopyIcon/></span>

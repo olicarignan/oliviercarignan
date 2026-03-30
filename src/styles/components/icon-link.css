@@ -32,9 +32,21 @@
 
   &.copied .icon--check {
     display: inline-flex;
+    margin-left: 0;
+    opacity: 1;
   }
 
   &.copied .icon--copy {
+    display: none;
+  }
+
+  &.copied-out .icon--check {
+    display: inline-flex;
+    margin-left: -2rem;
+    opacity: 0;
+  }
+
+  &.copied-out .icon--copy {
     display: none;
   }
 }
