@@ -35,7 +35,7 @@ export default function Home({ data }) {
         <motion.p variants={fadeIn}>I am driven by curiosity and strive for a high level of craftsmanship and excellence in my work.</motion.p>
         <motion.p variants={fadeIn}>Co-Founder &amp; Product Lead at <a href="https://brunch.work" target="_blank" rel="noopener noreferrer">Brunch</a></motion.p>
 
-        <Slider projects={data.home2.projects} />
+        <Slider projects={data.home.projects} />
 
         <motion.div className="clients" variants={fadeIn}>
           <h3>Selected Clients</h3>
