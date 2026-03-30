@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-export default function Head() {
+export default function SEO() {
   const title = "Olivier Carignan";
   const description = "Designer, Engineer & Founder";
   const url = "https://oliviercarignan.com";
