@@ -233,7 +233,7 @@ export function Slider({ projects }) {
           return (
             <motion.div
               key={project.id}
-              className="slider__item"
+              className={`slider__item${i === activeIndex ? " slider__item--active" : ""}`}
               variants={itemFadeIn}
               style={{ width: `${layout.itemWidth}px` }}
               onPointerEnter={(e) => {

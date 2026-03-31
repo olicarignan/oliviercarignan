@@ -45,6 +45,12 @@
     &:hover video {
       opacity: 1;
     }
+
+    @media (pointer: coarse) {
+      &.slider__item--active video {
+        opacity: 1;
+      }
+    }
   }
 
   .slider__meta {
