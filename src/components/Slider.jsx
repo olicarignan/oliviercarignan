@@ -236,14 +236,16 @@ export function Slider({ projects }) {
               className="slider__item"
               variants={itemFadeIn}
               style={{ width: `${layout.itemWidth}px` }}
-              onMouseEnter={(e) => {
+              onPointerEnter={(e) => {
+                if (e.pointerType === "touch") return;
                 const video = e.currentTarget.querySelector("video");
                 if (video) {
                   video.currentTime = 0;
                   video.play();
                 }
               }}
-              onMouseLeave={(e) => {
+              onPointerLeave={(e) => {
+                if (e.pointerType === "touch") return;
                 const video = e.currentTarget.querySelector("video");
                 if (video) {
                   video.pause();
