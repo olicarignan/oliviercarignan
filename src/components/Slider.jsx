@@ -207,7 +207,7 @@ export function Slider({ projects }) {
           paddingRight: `${layout.inset}px`,
           scrollPaddingLeft: `${layout.inset}px`,
           cursor: isDragging ? "grabbing" : "grab",
-          touchAction: "pan-x",
+          touchAction: "pan-x pan-y",
         }}
       >
         {projects.map((project, i) => {
