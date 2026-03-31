@@ -191,6 +191,23 @@ export function Slider({ projects }) {
     requestAnimationFrame(step);
   }, [layout.inset]);
 
+  useEffect(() => {
+    if (!window.matchMedia("(pointer: coarse)").matches) return;
+    const track = trackRef.current;
+    if (!track) return;
+    const items = track.querySelectorAll(".slider__item");
+    items.forEach((item, i) => {
+      const video = item.querySelector("video");
+      if (!video) return;
+      if (i === activeIndex) {
+        video.currentTime = 0;
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
+  }, [activeIndex]);
+
   const active = projects[activeIndex];
 
   return (
