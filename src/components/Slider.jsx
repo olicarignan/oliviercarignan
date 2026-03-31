@@ -25,8 +25,10 @@ const itemFadeIn = {
 export function Slider({ projects }) {
   const trackRef = useRef(null);
   const scrollTimer = useRef(null);
+  const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [layout, setLayout] = useState({ inset: 0, itemWidth: 0 });
 
@@ -115,6 +117,79 @@ export function Slider({ projects }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeIndex, projects.length, scrollToIndex]);
 
+  const handlePointerDown = useCallback((e) => {
+    const track = trackRef.current;
+    if (!track) return;
+    dragState.current = {
+      isDragging: true,
+      startX: e.clientX,
+      scrollLeft: track.scrollLeft,
+      prevX: e.clientX,
+      prevTime: Date.now(),
+      velocity: 0,
+    };
+    setIsDragging(true);
+    track.style.scrollSnapType = "none";
+    track.setPointerCapture(e.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback((e) => {
+    const ds = dragState.current;
+    if (!ds.isDragging) return;
+    const now = Date.now();
+    const dt = now - ds.prevTime;
+    const dx = e.clientX - ds.prevX;
+    if (dt > 0) {
+      ds.velocity = dx / dt;
+    }
+    ds.prevX = e.clientX;
+    ds.prevTime = now;
+    trackRef.current.scrollLeft = ds.scrollLeft - (e.clientX - ds.startX);
+  }, []);
+
+  const handlePointerUp = useCallback((e) => {
+    const ds = dragState.current;
+    if (!ds.isDragging) return;
+    ds.isDragging = false;
+    setIsDragging(false);
+    const track = trackRef.current;
+    track.releasePointerCapture(e.pointerId);
+
+    // Inertia scroll
+    let velocity = -ds.velocity * 1000; // px per second
+    const friction = 0.95;
+    let lastTime = performance.now();
+
+    const step = (now) => {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      velocity *= friction;
+      track.scrollLeft += velocity * dt;
+
+      if (Math.abs(velocity) > 20) {
+        requestAnimationFrame(step);
+      } else {
+        // Snap to nearest item
+        const items = track.querySelectorAll(".slider__item");
+        let closest = 0;
+        let closestDist = Infinity;
+        items.forEach((item, i) => {
+          const dist = Math.abs(item.getBoundingClientRect().left - layout.inset);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = i;
+          }
+        });
+        items[closest].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+        setTimeout(() => {
+          track.style.scrollSnapType = "x mandatory";
+        }, 500);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }, [layout.inset]);
+
   const active = projects[activeIndex];
 
   return (
@@ -122,10 +197,15 @@ export function Slider({ projects }) {
       <motion.div
         className="slider__track"
         ref={trackRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
           paddingLeft: `${layout.inset}px`,
           paddingRight: `${layout.inset}px`,
           scrollPaddingLeft: `${layout.inset}px`,
+          cursor: isDragging ? "grabbing" : "grab",
         }}
       >
         {projects.map((project, i) => {
@@ -143,6 +223,7 @@ export function Slider({ projects }) {
                   src={img.src}
                   srcSet={img.srcSet}
                   alt={img.alt || project.title}
+                  draggable={false}
                   fetchPriority={i === 0 ? "high" : undefined}
                   loading={i <= 1 ? "eager" : "lazy"}
                   decoding={i <= 1 ? "sync" : "async"}
