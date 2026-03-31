@@ -17,6 +17,9 @@ export const getHome = `
             base64
           }
         }
+        video {
+          url
+        }
       }
     }
   }

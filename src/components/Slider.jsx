@@ -151,7 +151,6 @@ export function Slider({ projects }) {
     const ds = dragState.current;
     if (!ds.isDragging) return;
     ds.isDragging = false;
-    setIsDragging(false);
     const track = trackRef.current;
     track.releasePointerCapture(e.pointerId);
 
@@ -183,6 +182,7 @@ export function Slider({ projects }) {
         items[closest].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
         setTimeout(() => {
           track.style.scrollSnapType = "x mandatory";
+          setIsDragging(false);
         }, 500);
       }
     };
@@ -210,12 +210,26 @@ export function Slider({ projects }) {
       >
         {projects.map((project, i) => {
           const img = project.featuredImage.responsiveImage;
+          const videoUrl = project.video?.url;
           return (
             <motion.div
               key={project.id}
               className="slider__item"
               variants={itemFadeIn}
               style={{ width: `${layout.itemWidth}px` }}
+              onMouseEnter={(e) => {
+                const video = e.currentTarget.querySelector("video");
+                if (video) {
+                  video.currentTime = 0;
+                  video.play();
+                }
+              }}
+              onMouseLeave={(e) => {
+                const video = e.currentTarget.querySelector("video");
+                if (video) {
+                  video.pause();
+                }
+              }}
             >
               <picture>
                 <source srcSet={img.webpSrcSet} type="image/webp" />
@@ -235,6 +249,16 @@ export function Slider({ projects }) {
                   } : undefined}
                 />
               </picture>
+              {videoUrl && (
+                <video
+                  src={videoUrl}
+                  muted
+                  playsInline
+                  loop
+                  preload="none"
+                  draggable={false}
+                />
+              )}
             </motion.div>
           );
         })}
@@ -248,9 +272,9 @@ export function Slider({ projects }) {
         <div
           className="slider__meta-inner"
           style={{
-            opacity: hasLoaded && isScrolling ? 0 : 1,
-            filter: hasLoaded && isScrolling ? "blur(4px)" : "blur(0px)",
-            transform: hasLoaded && isScrolling ? "translateY(8px)" : "translateY(0)",
+            opacity: hasLoaded && (isScrolling || isDragging) ? 0 : 1,
+            filter: hasLoaded && (isScrolling || isDragging) ? "blur(4px)" : "blur(0px)",
+            transform: hasLoaded && (isScrolling || isDragging) ? "translateY(8px)" : "translateY(0)",
             transition: "opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease",
           }}
         >

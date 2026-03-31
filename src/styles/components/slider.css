@@ -19,8 +19,10 @@
   .slider__item {
     flex-shrink: 0;
     scroll-snap-align: start;
+    position: relative;
 
-    img {
+    img,
+    video {
       border-radius: 16px;
       corner-shape: squircle;
 
@@ -30,6 +32,17 @@
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
+    }
+
+    video {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover video {
+      opacity: 1;
     }
   }
 
