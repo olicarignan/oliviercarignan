@@ -118,6 +118,7 @@ export function Slider({ projects }) {
   }, [activeIndex, projects.length, scrollToIndex]);
 
   const handlePointerDown = useCallback((e) => {
+    if (e.pointerType === "touch") return;
     const track = trackRef.current;
     if (!track) return;
     dragState.current = {
@@ -206,6 +207,7 @@ export function Slider({ projects }) {
           paddingRight: `${layout.inset}px`,
           scrollPaddingLeft: `${layout.inset}px`,
           cursor: isDragging ? "grabbing" : "grab",
+          touchAction: "pan-x",
         }}
       >
         {projects.map((project, i) => {
