@@ -192,7 +192,6 @@ export function Slider({ projects }) {
   }, [layout.inset]);
 
   useEffect(() => {
-    if (!window.matchMedia("(pointer: coarse)").matches) return;
     const track = trackRef.current;
     if (!track) return;
     const items = track.querySelectorAll(".slider__item");
@@ -236,21 +235,6 @@ export function Slider({ projects }) {
               className={`slider__item${i === activeIndex ? " slider__item--active" : ""}`}
               variants={itemFadeIn}
               style={{ width: `${layout.itemWidth}px` }}
-              onPointerEnter={(e) => {
-                if (e.pointerType === "touch") return;
-                const video = e.currentTarget.querySelector("video");
-                if (video) {
-                  video.currentTime = 0;
-                  video.play();
-                }
-              }}
-              onPointerLeave={(e) => {
-                if (e.pointerType === "touch") return;
-                const video = e.currentTarget.querySelector("video");
-                if (video) {
-                  video.pause();
-                }
-              }}
             >
               <picture>
                 <source srcSet={img.webpSrcSet} type="image/webp" />

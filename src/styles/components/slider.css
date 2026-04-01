@@ -42,14 +42,8 @@
       transition: opacity 0.3s ease;
     }
 
-    &:hover video {
+    &.slider__item--active video {
       opacity: 1;
-    }
-
-    @media (pointer: coarse) {
-      &.slider__item--active video {
-        opacity: 1;
-      }
     }
   }
 
