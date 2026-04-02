@@ -338,7 +338,6 @@ export function Slider({ projects }) {
           paddingLeft: `${layout.inset}px`,
           paddingRight: `${layout.inset}px`,
           scrollPaddingLeft: `${layout.inset}px`,
-          cursor: isDragging ? "grabbing" : "grab",
           touchAction: "pan-x pan-y",
         }}
       >

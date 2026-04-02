@@ -246,7 +246,6 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{
-          cursor: isDragging ? "grabbing" : "grab",
           touchAction: "pan-x",
         }}
       >
