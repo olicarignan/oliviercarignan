@@ -80,7 +80,7 @@
 
   .lightbox__item--active {
     opacity: 1;
-    cursor: zoom-out;
+    cursor: url("/images/svg/cursor_x.svg") 8 8, zoom-out;
 
     video {
       opacity: 1;
