@@ -55,11 +55,6 @@
         filter 1s cubic-bezier(0, 0.55, 0.45, 1);
     }
 
-    &--active {
-      opacity: 1;
-      cursor: zoom-out;
-    }
-
     img,
     video {
       width: 100%;
@@ -83,8 +78,13 @@
     }
   }
 
-  .lightbox__item--active video {
+  .lightbox__item--active {
     opacity: 1;
+    cursor: zoom-out;
+
+    video {
+      opacity: 1;
+    }
   }
 
   /* Reveal neighbors after view transition */

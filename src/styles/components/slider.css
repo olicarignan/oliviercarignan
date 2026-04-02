@@ -28,6 +28,7 @@
     video {
       border-radius: 16px;
       corner-shape: squircle;
+      cursor: zoom-in;
 
       @media (min-width: 600px) {
         border-radius: 32px;
