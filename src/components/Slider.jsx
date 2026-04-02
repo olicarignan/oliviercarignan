@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion } from "motion/react";
+import { flushSync } from "react-dom";
+import { motion, AnimatePresence } from "motion/react";
+import { Lightbox } from "./Lightbox";
 
 const staggerItems = {
   initial: {},
@@ -31,6 +33,9 @@ export function Slider({ projects }) {
   const [isDragging, setIsDragging] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [layout, setLayout] = useState({ inset: 0, itemWidth: 0 });
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const dragDistRef = useRef(0);
+  const pendingLightbox = useRef(null);
 
   useEffect(() => {
     const measure = () => {
@@ -103,6 +108,7 @@ export function Slider({ projects }) {
   }, [handleScroll]);
 
   useEffect(() => {
+    if (lightboxOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === "ArrowRight") {
         const next = Math.min(activeIndex + 1, projects.length - 1);
@@ -115,12 +121,45 @@ export function Slider({ projects }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeIndex, projects.length, scrollToIndex]);
+  }, [activeIndex, projects.length, scrollToIndex, lightboxOpen]);
+
+  const openLightbox = useCallback((index) => {
+    const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
+    if (!sliderItems?.[index]) return;
+
+    if (document.startViewTransition) {
+      // Old snapshot: slider item has the name
+      sliderItems[index].style.viewTransitionName = "slider-active";
+      document.documentElement.style.viewTransitionName = "none";
+
+      const transition = document.startViewTransition(() => {
+        // Remove from slider item so lightbox active item (via CSS) becomes the new snapshot
+        sliderItems[index].style.viewTransitionName = "";
+        flushSync(() => setLightboxOpen(true));
+      });
+
+      transition.finished.then(() => {
+        document.documentElement.style.viewTransitionName = "";
+      });
+    } else {
+      setLightboxOpen(true);
+    }
+  }, []);
+
+  const handleItemClick = useCallback((index) => {
+    if (index === activeIndex) {
+      openLightbox(index);
+    } else {
+      pendingLightbox.current = index;
+      scrollToIndex(index);
+    }
+  }, [activeIndex, openLightbox, scrollToIndex]);
 
   const handlePointerDown = useCallback((e) => {
     if (e.pointerType === "touch") return;
     const track = trackRef.current;
     if (!track) return;
+    dragDistRef.current = 0;
     dragState.current = {
       isDragging: true,
       startX: e.clientX,
@@ -145,6 +184,7 @@ export function Slider({ projects }) {
     }
     ds.prevX = e.clientX;
     ds.prevTime = now;
+    dragDistRef.current = Math.abs(e.clientX - ds.startX);
     trackRef.current.scrollLeft = ds.scrollLeft - (e.clientX - ds.startX);
   }, []);
 
@@ -155,9 +195,22 @@ export function Slider({ projects }) {
     const track = trackRef.current;
     track.releasePointerCapture(e.pointerId);
 
+    // If barely moved, treat as click
+    if (dragDistRef.current < 5) {
+      track.style.scrollSnapType = "x mandatory";
+      setIsDragging(false);
+      const el = document.elementFromPoint(e.clientX, e.clientY)?.closest(".slider__item");
+      if (el) {
+        const items = Array.from(track.querySelectorAll(".slider__item"));
+        const index = items.indexOf(el);
+        if (index >= 0) handleItemClick(index);
+      }
+      return;
+    }
+
     // Inertia scroll
     let velocity = -ds.velocity * 1000; // px per second
-    const friction = 0.95;
+    const friction = 0.92;
     let lastTime = performance.now();
 
     const step = (now) => {
@@ -166,7 +219,7 @@ export function Slider({ projects }) {
       velocity *= friction;
       track.scrollLeft += velocity * dt;
 
-      if (Math.abs(velocity) > 20) {
+      if (Math.abs(velocity) > 50) {
         requestAnimationFrame(step);
       } else {
         // Snap to nearest item
@@ -180,16 +233,21 @@ export function Slider({ projects }) {
             closest = i;
           }
         });
-        items[closest].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-        setTimeout(() => {
+
+        const onScrollEnd = () => {
+          clearTimeout(fallback);
           track.style.scrollSnapType = "x mandatory";
           setIsDragging(false);
-        }, 500);
+          track.removeEventListener("scrollend", onScrollEnd);
+        };
+        const fallback = setTimeout(onScrollEnd, 300);
+        track.addEventListener("scrollend", onScrollEnd, { once: true });
+        items[closest].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
       }
     };
 
     requestAnimationFrame(step);
-  }, [layout.inset]);
+  }, [layout.inset, handleItemClick]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -206,6 +264,64 @@ export function Slider({ projects }) {
       }
     });
   }, [activeIndex]);
+
+  const closeLightbox = useCallback(() => {
+    const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
+    if (!sliderItems?.[activeIndex]) {
+      setLightboxOpen(false);
+      return;
+    }
+
+    // Step 1: Fade out neighbors and backdrop
+    const lightboxEl = document.querySelector(".lightbox");
+    if (lightboxEl) lightboxEl.classList.add("lightbox--closing");
+
+    const runViewTransition = () => {
+      if (document.startViewTransition) {
+        // Old snapshot: lightbox active item has the name via CSS
+        document.documentElement.style.viewTransitionName = "none";
+
+        const transition = document.startViewTransition(() => {
+          // Remove name from lightbox item so it doesn't conflict
+          const lbActive = document.querySelector(".lightbox__item--active");
+          if (lbActive) lbActive.style.viewTransitionName = "none";
+
+          // New snapshot: slider item gets the name
+          sliderItems[activeIndex].style.viewTransitionName = "slider-active";
+          flushSync(() => setLightboxOpen(false));
+        });
+
+        transition.finished.then(() => {
+          sliderItems[activeIndex].style.viewTransitionName = "";
+          document.documentElement.style.viewTransitionName = "";
+        });
+      } else {
+        setLightboxOpen(false);
+      }
+    };
+
+    // Step 2: Wait for fade-out to finish, then run view transition
+    if (lightboxEl) {
+      setTimeout(runViewTransition, 300);
+    } else {
+      runViewTransition();
+    }
+  }, [activeIndex]);
+
+  // Open lightbox after pending scroll settles
+  useEffect(() => {
+    if (pendingLightbox.current !== null && activeIndex === pendingLightbox.current) {
+      const idx = pendingLightbox.current;
+      pendingLightbox.current = null;
+      // Small delay to let scroll fully settle
+      requestAnimationFrame(() => openLightbox(idx));
+    }
+  }, [activeIndex, openLightbox]);
+
+  const handleLightboxActiveChange = useCallback((index) => {
+    setActiveIndex(index);
+    scrollToIndex(index);
+  }, [scrollToIndex]);
 
   const active = projects[activeIndex];
 
@@ -234,7 +350,11 @@ export function Slider({ projects }) {
               key={project.id}
               className={`slider__item${i === activeIndex ? " slider__item--active" : ""}`}
               variants={itemFadeIn}
-              style={{ width: `${layout.itemWidth}px` }}
+              style={{ width: `${layout.itemWidth}px`, cursor: "zoom-in" }}
+              onClick={() => {
+                // Touch clicks (pointer capture doesn't apply to touch)
+                if (dragDistRef.current < 5) handleItemClick(i);
+              }}
             >
               <picture>
                 <source srcSet={img.webpSrcSet} type="image/webp" />
@@ -287,6 +407,16 @@ export function Slider({ projects }) {
           <p>{active?.typeYear}</p>
         </div>
       </motion.div>
+      <AnimatePresence>
+        {lightboxOpen && (
+          <Lightbox
+            projects={projects}
+            activeIndex={activeIndex}
+            onActiveIndexChange={handleLightboxActiveChange}
+            onClose={closeLightbox}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

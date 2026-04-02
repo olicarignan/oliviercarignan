@@ -1,0 +1,132 @@
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+
+  .lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(250, 250, 250, 0.1);
+    backdrop-filter: blur(20px);
+    cursor: zoom-out;
+  }
+
+  .lightbox__track {
+    position: relative;
+    display: flex;
+    gap: 4rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+    padding-inline: 2.5vw;
+    scroll-padding-inline: 2.5vw;
+
+    @media (min-width: 600px) {
+      padding-inline: 12.5vw;
+      scroll-padding-inline: 12.5vw;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .lightbox__item {
+    flex-shrink: 0;
+    width: 95vw;
+    scroll-snap-align: center;
+    position: relative;
+    cursor: pointer;
+
+    @media (min-width: 600px) {
+      width: 75vw;
+    }
+
+    &:not(.lightbox__item--active) {
+      opacity: 0;
+      filter: blur(4px);
+      transition: opacity 1s cubic-bezier(0, 0.55, 0.45, 1),
+        transform 1s cubic-bezier(0, 0.55, 0.45, 1),
+        filter 1s cubic-bezier(0, 0.55, 0.45, 1);
+    }
+
+    &--active {
+      opacity: 1;
+      cursor: zoom-out;
+    }
+
+    img,
+    video {
+      width: 100%;
+      object-fit: cover;
+      aspect-ratio: 3 / 2;
+      border-radius: 20px;
+      corner-shape: squircle;
+      user-select: none;
+      -webkit-user-drag: none;
+
+      @media (min-width: 600px) {
+        border-radius: 48px;
+      }
+    }
+
+    video {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  }
+
+  .lightbox__item--active video {
+    opacity: 1;
+  }
+
+  /* Reveal neighbors after view transition */
+  &.lightbox--revealed .lightbox__item {
+    opacity: 1;
+    filter: blur(0px);
+  }
+
+  &.lightbox--revealed .lightbox__item--active {
+    transform: scale(1);
+  }
+
+  /* Closing: fade out neighbors and backdrop before view transition */
+  &.lightbox--closing .lightbox__backdrop {
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1);
+  }
+
+  &.lightbox--closing .lightbox__item:not(.lightbox__item--active) {
+    opacity: 0;
+    filter: blur(4px);
+    transition: opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1),
+      filter 0.3s cubic-bezier(0, 0.55, 0.45, 1);
+  }
+
+  &.lightbox--closing .lightbox__item--active {
+    opacity: 0;
+    transition: opacity 0.15s cubic-bezier(0, 0.55, 0.45, 1) 0.3s;
+  }
+}
+
+/* View Transitions */
+.lightbox__item--active {
+  view-transition-name: slider-active;
+}
+
+::view-transition-group(slider-active) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+::view-transition-old(slider-active),
+::view-transition-new(slider-active) {
+  animation: none;
+}

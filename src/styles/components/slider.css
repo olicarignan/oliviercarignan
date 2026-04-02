@@ -7,10 +7,12 @@
     display: flex;
     gap: var(--gap);
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: clip;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    padding-block: 48px;
+    margin-block: -48px;
 
     &::-webkit-scrollbar {
       display: none;
@@ -33,13 +35,25 @@
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    @media (hover: hover) {
+      &:hover img,
+      &:hover video {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
     }
 
     video {
       position: absolute;
       inset: 0;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     &.slider__item--active video {
