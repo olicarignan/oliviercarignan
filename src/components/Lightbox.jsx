@@ -5,17 +5,35 @@ import { motion } from "motion/react";
 
 export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexChange, onClose }) {
   const trackRef = useRef(null);
-  const scrollTimer = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [isDragging, setIsDragging] = useState(false);
   const dragDistRef = useRef(0);
   const hasInitialized = useRef(false);
   const [neighborsRevealed, setNeighborsRevealed] = useState(false);
+  const revealedRef = useRef(false);
 
   // Reveal neighbors after view transition finishes
   useEffect(() => {
-    const timer = setTimeout(() => setNeighborsRevealed(true), 500);
+    const timer = setTimeout(() => {
+      setNeighborsRevealed(true);
+      revealedRef.current = true;
+      // Set initial dim state
+      const track = trackRef.current;
+      if (track) {
+        const items = track.querySelectorAll(".lightbox__item");
+        const center = window.innerWidth / 2;
+        items.forEach((item) => {
+          const rect = item.getBoundingClientRect();
+          const itemCenter = rect.left + rect.width / 2;
+          const dist = Math.abs(itemCenter - center);
+          const halfItem = rect.width / 2;
+          const edgeDist = Math.max(0, dist - halfItem);
+          const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
+          item.style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
+        });
+      }
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -54,15 +72,19 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
         closestDist = dist;
         closest = i;
       }
+
+      // Dim items based on distance from center
+      if (revealedRef.current) {
+        const halfItem = rect.width / 2;
+        const edgeDist = Math.max(0, dist - halfItem);
+        const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
+        item.style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
+      }
     });
 
     // Report to parent immediately so slider stays in sync
     onActiveIndexChange(closest);
-
-    clearTimeout(scrollTimer.current);
-    scrollTimer.current = setTimeout(() => {
-      setActiveIndex(closest);
-    }, 150);
+    setActiveIndex(closest);
   }, [onActiveIndexChange]);
 
   useEffect(() => {
@@ -216,18 +238,21 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
       const video = item.querySelector("video");
       if (!video) return;
       if (i === activeIndex) {
-        video.currentTime = 0;
-        video.play();
-        const onReady = () => item.classList.add("lightbox__item--video-ready");
-        if (video.readyState >= 2) {
-          onReady();
-        } else {
-          video.addEventListener("canplay", onReady, { once: true });
-          cleanups.push(() => video.removeEventListener("canplay", onReady));
-        }
+        const startVideo = () => {
+          video.currentTime = 0;
+          video.play();
+          const onReady = () => item.classList.add("lightbox__item--video-ready");
+          if (video.readyState >= 2) {
+            onReady();
+          } else {
+            video.addEventListener("canplay", onReady, { once: true });
+            cleanups.push(() => video.removeEventListener("canplay", onReady));
+          }
+        };
+        const timer = setTimeout(startVideo, 300);
+        cleanups.push(() => clearTimeout(timer));
       } else {
         video.pause();
-        item.classList.remove("lightbox__item--video-ready");
       }
     });
     return () => cleanups.forEach((fn) => fn());

@@ -340,8 +340,7 @@ export function Slider({ projects }) {
           const lightboxRoot = document.querySelector(".lightbox");
           if (lightboxRoot) lightboxRoot.style.display = "none";
 
-          // New snapshot: slider item gets the name (no shadow yet)
-          sliderItems[activeIndex].classList.add("slider__item--transitioning");
+          // New snapshot: slider item gets the name
           sliderItems[activeIndex].style.viewTransitionName = "slider-active";
           flushSync(() => setLightboxOpen(false));
         });
@@ -349,7 +348,6 @@ export function Slider({ projects }) {
 
         transition.finished.then(() => {
           activeTransition.current = null;
-          sliderItems[activeIndex].classList.remove("slider__item--transitioning");
           sliderItems[activeIndex].style.viewTransitionName = "";
           document.documentElement.style.viewTransitionName = "";
         });
