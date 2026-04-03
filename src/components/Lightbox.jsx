@@ -211,16 +211,26 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
     const track = trackRef.current;
     if (!track) return;
     const items = track.querySelectorAll(".lightbox__item");
+    const cleanups = [];
     items.forEach((item, i) => {
       const video = item.querySelector("video");
       if (!video) return;
       if (i === activeIndex) {
         video.currentTime = 0;
         video.play();
+        const onReady = () => item.classList.add("lightbox__item--video-ready");
+        if (video.readyState >= 2) {
+          onReady();
+        } else {
+          video.addEventListener("canplay", onReady, { once: true });
+          cleanups.push(() => video.removeEventListener("canplay", onReady));
+        }
       } else {
         video.pause();
+        item.classList.remove("lightbox__item--video-ready");
       }
     });
+    return () => cleanups.forEach((fn) => fn());
   }, [activeIndex]);
 
   // Click handler for touch (pointer capture skips touch)
@@ -247,6 +257,11 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onClick={(e) => {
+          if (dragDistRef.current >= 5) return;
+          const el = document.elementFromPoint(e.clientX, e.clientY)?.closest(".lightbox__item");
+          if (!el) onClose();
+        }}
         style={{
           touchAction: "pan-x",
         }}

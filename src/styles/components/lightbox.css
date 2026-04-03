@@ -62,8 +62,10 @@
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
-      border-radius: 6cqi;
-      corner-shape: squircle;
+      -webkit-mask-image: url("/images/svg/squircle.svg");
+      mask-image: url("/images/svg/squircle.svg");
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
       user-select: none;
       -webkit-user-drag: none;
     }
@@ -82,6 +84,11 @@
     video {
       opacity: 1;
     }
+
+  }
+
+  .lightbox__item--video-ready img {
+    display: none;
   }
 
   /* Reveal neighbors after view transition */
@@ -144,9 +151,9 @@
   }
 
   &.lightbox--closing .lightbox__item--active {
-    opacity: 0;
-    transition: opacity 0.15s cubic-bezier(0, 0.55, 0.45, 1) 0.3s;
-  }
+     opacity: 0;
+     transition: opacity 0s linear 0.4s;
+   }
 }
 
 /* View Transitions */
@@ -155,11 +162,12 @@
 }
 
 ::view-transition-group(slider-active) {
-  animation-duration: 0.5s;
-  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0, 1);
 }
 
 ::view-transition-old(slider-active),
 ::view-transition-new(slider-active) {
-  animation: none;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0, 1);
 }

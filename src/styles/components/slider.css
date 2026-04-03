@@ -24,37 +24,32 @@
     scroll-snap-align: start;
     position: relative;
     container-type: inline-size;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      filter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     img,
     video {
       display: block;
-      border-radius: 6cqi;
-      corner-shape: squircle;
+      -webkit-mask-image: url("/images/svg/squircle.svg");
+      mask-image: url("/images/svg/squircle.svg");
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
       cursor: url("/images/svg/cursor_plus.svg") 8 8, zoom-in;
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
-      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    img {
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    &.slider__item--transitioning img,
-    &.slider__item--transitioning video {
-      box-shadow: none;
+    &.slider__item--transitioning {
+      filter: none;
       transition: none;
     }
 
     @media (hover: hover) {
-      &:hover video {
+      &:hover {
         transform: translateY(-6px);
-      }
-      &:hover img {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
+        filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.15)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
       }
     }
 
@@ -62,16 +57,15 @@
       position: absolute;
       inset: 0;
       opacity: 0;
-      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+      transition: opacity 0.3s ease;
     }
 
     &.slider__item--active video {
       opacity: 1;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
-    &.slider__item--active img {
-      box-shadow: none;
+    &.slider__item--video-ready img {
+      display: none;
     }
   }
 

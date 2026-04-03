@@ -15,11 +15,10 @@ const staggerItems = {
 };
 
 const itemFadeIn = {
-  initial: { opacity: 0, y: 8, filter: "blur(4px)" },
+  initial: { opacity: 0, y: 8 },
   animate: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 1, ease: [0, 0.55, 0.45, 1] },
   },
 };
@@ -38,6 +37,7 @@ export function Slider({ projects }) {
   const dragDistRef = useRef(0);
   const pendingLightbox = useRef(null);
   const externalScroll = useRef(false);
+  const activeTransition = useRef(null);
 
   useEffect(() => {
     const measure = () => {
@@ -115,7 +115,10 @@ export function Slider({ projects }) {
   useEffect(() => {
     if (lightboxOpen) return;
     const handleKeyDown = (e) => {
-      if (e.key === "ArrowRight") {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openLightbox(activeIndex);
+      } else if (e.key === "ArrowRight") {
         const next = Math.min(activeIndex + 1, projects.length - 1);
         if (next !== activeIndex) scrollToIndex(next);
       } else if (e.key === "ArrowLeft") {
@@ -131,6 +134,7 @@ export function Slider({ projects }) {
   const openLightbox = useCallback((index) => {
     const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
     if (!sliderItems?.[index]) return;
+    if (activeTransition.current) return;
 
     if (document.startViewTransition) {
       // Fade out shadow before snapshot
@@ -145,8 +149,10 @@ export function Slider({ projects }) {
         sliderItems[index].style.viewTransitionName = "";
         flushSync(() => setLightboxOpen(true));
       });
+      activeTransition.current = transition;
 
       transition.finished.then(() => {
+        activeTransition.current = null;
         sliderItems[index].classList.remove("slider__item--transitioning");
         document.documentElement.style.viewTransitionName = "";
       });
@@ -272,25 +278,37 @@ export function Slider({ projects }) {
     const track = trackRef.current;
     if (!track) return;
     const items = track.querySelectorAll(".slider__item");
+    const cleanups = [];
     items.forEach((item, i) => {
       const video = item.querySelector("video");
       if (!video) return;
       if (sliderVideosHidden) {
         video.pause();
         video.style.visibility = "hidden";
+        item.classList.remove("slider__item--video-ready");
       } else {
         video.style.visibility = "";
         if (i === activeIndex) {
           video.currentTime = 0;
           video.play();
+          const onReady = () => item.classList.add("slider__item--video-ready");
+          if (video.readyState >= 2) {
+            onReady();
+          } else {
+            video.addEventListener("canplay", onReady, { once: true });
+            cleanups.push(() => video.removeEventListener("canplay", onReady));
+          }
         } else {
           video.pause();
+          item.classList.remove("slider__item--video-ready");
         }
       }
     });
+    return () => cleanups.forEach((fn) => fn());
   }, [activeIndex, sliderVideosHidden]);
 
   const closeLightbox = useCallback(() => {
+    if (activeTransition.current) return;
     const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
     if (!sliderItems?.[activeIndex]) {
       setLightboxOpen(false);
@@ -302,6 +320,7 @@ export function Slider({ projects }) {
     if (lightboxEl) lightboxEl.classList.add("lightbox--closing");
 
     const runViewTransition = () => {
+      if (activeTransition.current) return;
       if (document.startViewTransition) {
         // Restore slider videos before snapshot so they appear in the capture
         sliderItems.forEach((item) => {
@@ -317,18 +336,20 @@ export function Slider({ projects }) {
           const lbActive = document.querySelector(".lightbox__item--active");
           if (lbActive) lbActive.style.viewTransitionName = "none";
 
+          // Hide lightbox immediately so its exit animation doesn't interfere
+          const lightboxRoot = document.querySelector(".lightbox");
+          if (lightboxRoot) lightboxRoot.style.display = "none";
+
           // New snapshot: slider item gets the name (no shadow yet)
           sliderItems[activeIndex].classList.add("slider__item--transitioning");
           sliderItems[activeIndex].style.viewTransitionName = "slider-active";
           flushSync(() => setLightboxOpen(false));
         });
-
-        // Start fading shadow in as soon as snapshot is captured
-        transition.ready.then(() => {
-          sliderItems[activeIndex].classList.remove("slider__item--transitioning");
-        });
+        activeTransition.current = transition;
 
         transition.finished.then(() => {
+          activeTransition.current = null;
+          sliderItems[activeIndex].classList.remove("slider__item--transitioning");
           sliderItems[activeIndex].style.viewTransitionName = "";
           document.documentElement.style.viewTransitionName = "";
         });
@@ -339,7 +360,7 @@ export function Slider({ projects }) {
 
     // Step 2: Wait for fade-out to finish, then run view transition
     if (lightboxEl) {
-      setTimeout(runViewTransition, 300);
+      setTimeout(runViewTransition, 350);
     } else {
       runViewTransition();
     }
