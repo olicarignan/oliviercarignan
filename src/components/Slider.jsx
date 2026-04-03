@@ -323,8 +323,12 @@ export function Slider({ projects }) {
           flushSync(() => setLightboxOpen(false));
         });
 
-        transition.finished.then(() => {
+        // Start fading shadow in as soon as snapshot is captured
+        transition.ready.then(() => {
           sliderItems[activeIndex].classList.remove("slider__item--transitioning");
+        });
+
+        transition.finished.then(() => {
           sliderItems[activeIndex].style.viewTransitionName = "";
           document.documentElement.style.viewTransitionName = "";
         });
