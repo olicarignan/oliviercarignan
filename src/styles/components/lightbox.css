@@ -38,13 +38,14 @@
 
   .lightbox__item {
     flex-shrink: 0;
-    width: 95vw;
+    width: min(95vw, 120dvh);
     scroll-snap-align: center;
     position: relative;
     cursor: pointer;
+    container-type: inline-size;
 
     @media (min-width: 600px) {
-      width: 75vw;
+      width: min(75vw, 120dvh);
     }
 
     &:not(.lightbox__item--active) {
@@ -57,24 +58,20 @@
 
     img,
     video {
+      display: block;
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
-      border-radius: 20px;
+      border-radius: 6cqi;
       corner-shape: squircle;
       user-select: none;
       -webkit-user-drag: none;
-
-      @media (min-width: 600px) {
-        border-radius: 48px;
-      }
     }
 
     video {
       position: absolute;
       inset: 0;
       opacity: 0;
-      transition: opacity 0.3s ease;
     }
   }
 
@@ -114,6 +111,10 @@
   &.lightbox--revealed .lightbox__item {
     opacity: 1;
     filter: blur(0px);
+
+    video {
+      transition: opacity 0.3s ease;
+    }
   }
 
   &.lightbox--revealed .lightbox__item--active {

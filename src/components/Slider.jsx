@@ -133,6 +133,9 @@ export function Slider({ projects }) {
     if (!sliderItems?.[index]) return;
 
     if (document.startViewTransition) {
+      // Fade out shadow before snapshot
+      sliderItems[index].classList.add("slider__item--transitioning");
+
       // Old snapshot: slider item has the name
       sliderItems[index].style.viewTransitionName = "slider-active";
       document.documentElement.style.viewTransitionName = "none";
@@ -144,6 +147,7 @@ export function Slider({ projects }) {
       });
 
       transition.finished.then(() => {
+        sliderItems[index].classList.remove("slider__item--transitioning");
         document.documentElement.style.viewTransitionName = "";
       });
     } else {
@@ -299,6 +303,12 @@ export function Slider({ projects }) {
 
     const runViewTransition = () => {
       if (document.startViewTransition) {
+        // Restore slider videos before snapshot so they appear in the capture
+        sliderItems.forEach((item) => {
+          const video = item.querySelector("video");
+          if (video) video.style.visibility = "";
+        });
+
         // Old snapshot: lightbox active item has the name via CSS
         document.documentElement.style.viewTransitionName = "none";
 
@@ -307,12 +317,14 @@ export function Slider({ projects }) {
           const lbActive = document.querySelector(".lightbox__item--active");
           if (lbActive) lbActive.style.viewTransitionName = "none";
 
-          // New snapshot: slider item gets the name
+          // New snapshot: slider item gets the name (no shadow yet)
+          sliderItems[activeIndex].classList.add("slider__item--transitioning");
           sliderItems[activeIndex].style.viewTransitionName = "slider-active";
           flushSync(() => setLightboxOpen(false));
         });
 
         transition.finished.then(() => {
+          sliderItems[activeIndex].classList.remove("slider__item--transitioning");
           sliderItems[activeIndex].style.viewTransitionName = "";
           document.documentElement.style.viewTransitionName = "";
         });

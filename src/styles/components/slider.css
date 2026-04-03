@@ -23,16 +23,14 @@
     flex-shrink: 0;
     scroll-snap-align: start;
     position: relative;
+    container-type: inline-size;
 
     img,
     video {
-      border-radius: 16px;
+      display: block;
+      border-radius: 6cqi;
       corner-shape: squircle;
       cursor: url("/images/svg/cursor_plus.svg") 8 8, zoom-in;
-
-      @media (min-width: 600px) {
-        border-radius: 32px;
-      }
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
@@ -42,6 +40,12 @@
 
     img {
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    &.slider__item--transitioning img,
+    &.slider__item--transitioning video {
+      box-shadow: none;
+      transition: none;
     }
 
     @media (hover: hover) {
