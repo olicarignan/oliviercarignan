@@ -88,6 +88,29 @@
   }
 
   /* Reveal neighbors after view transition */
+  .lightbox__close {
+    display: none;
+
+    @media (max-width: 599px) {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 1.25rem;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 1s cubic-bezier(0, 0.55, 0.45, 1);
+    }
+  }
+
   &.lightbox--revealed .lightbox__item {
     opacity: 1;
     filter: blur(0px);
@@ -95,6 +118,10 @@
 
   &.lightbox--revealed .lightbox__item--active {
     transform: scale(1);
+  }
+
+  &.lightbox--revealed .lightbox__close {
+    opacity: 1;
   }
 
   /* Closing: fade out neighbors and backdrop before view transition */
@@ -108,6 +135,11 @@
     filter: blur(4px);
     transition: opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1),
       filter 0.3s cubic-bezier(0, 0.55, 0.45, 1);
+  }
+
+  &.lightbox--closing .lightbox__close {
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1);
   }
 
   &.lightbox--closing .lightbox__item--active {

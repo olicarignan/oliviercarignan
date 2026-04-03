@@ -34,8 +34,10 @@ export function Slider({ projects }) {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [layout, setLayout] = useState({ inset: 0, itemWidth: 0 });
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [sliderVideosHidden, setSliderVideosHidden] = useState(false);
   const dragDistRef = useRef(0);
   const pendingLightbox = useRef(null);
+  const externalScroll = useRef(false);
 
   useEffect(() => {
     const measure = () => {
@@ -76,6 +78,9 @@ export function Slider({ projects }) {
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
+
+    // Skip detection when scroll was triggered by lightbox sync
+    if (externalScroll.current) return;
 
     setIsScrolling(true);
     clearTimeout(scrollTimer.current);
@@ -249,6 +254,16 @@ export function Slider({ projects }) {
     requestAnimationFrame(step);
   }, [layout.inset, handleItemClick]);
 
+  // Hide slider videos after backdrop fades in, restore on close
+  useEffect(() => {
+    if (lightboxOpen) {
+      const timer = setTimeout(() => setSliderVideosHidden(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setSliderVideosHidden(false);
+    }
+  }, [lightboxOpen]);
+
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -256,14 +271,20 @@ export function Slider({ projects }) {
     items.forEach((item, i) => {
       const video = item.querySelector("video");
       if (!video) return;
-      if (i === activeIndex) {
-        video.currentTime = 0;
-        video.play();
-      } else {
+      if (sliderVideosHidden) {
         video.pause();
+        video.style.visibility = "hidden";
+      } else {
+        video.style.visibility = "";
+        if (i === activeIndex) {
+          video.currentTime = 0;
+          video.play();
+        } else {
+          video.pause();
+        }
       }
     });
-  }, [activeIndex]);
+  }, [activeIndex, sliderVideosHidden]);
 
   const closeLightbox = useCallback(() => {
     const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
@@ -320,7 +341,13 @@ export function Slider({ projects }) {
 
   const handleLightboxActiveChange = useCallback((index) => {
     setActiveIndex(index);
+    externalScroll.current = true;
     scrollToIndex(index);
+    // Clear flag after scroll settles
+    clearTimeout(scrollTimer.current);
+    scrollTimer.current = setTimeout(() => {
+      externalScroll.current = false;
+    }, 300);
   }, [scrollToIndex]);
 
   const active = projects[activeIndex];

@@ -36,30 +36,32 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
     }
   }, [initialIndex]);
 
-  // Scroll handler — detect active item after scroll settles
+  // Scroll handler — report index eagerly on every frame, settle internal state after debounce
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
 
+    const items = track.querySelectorAll(".lightbox__item");
+    const center = window.innerWidth / 2;
+
+    let closest = 0;
+    let closestDist = Infinity;
+    items.forEach((item, i) => {
+      const rect = item.getBoundingClientRect();
+      const itemCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(itemCenter - center);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = i;
+      }
+    });
+
+    // Report to parent immediately so slider stays in sync
+    onActiveIndexChange(closest);
+
     clearTimeout(scrollTimer.current);
     scrollTimer.current = setTimeout(() => {
-      const items = track.querySelectorAll(".lightbox__item");
-      const center = window.innerWidth / 2;
-
-      let closest = 0;
-      let closestDist = Infinity;
-      items.forEach((item, i) => {
-        const rect = item.getBoundingClientRect();
-        const itemCenter = rect.left + rect.width / 2;
-        const dist = Math.abs(itemCenter - center);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closest = i;
-        }
-      });
-
       setActiveIndex(closest);
-      onActiveIndexChange(closest);
     }, 150);
   }, [onActiveIndexChange]);
 
@@ -285,6 +287,9 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
           );
         })}
       </div>
+      <button className="lightbox__close" onClick={onClose} aria-label="Close">
+        Close
+      </button>
     </div>
   );
 }
