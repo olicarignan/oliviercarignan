@@ -1,0 +1,38 @@
+.scroll-gradients {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity, transform;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.blob {
+  position: absolute;
+  translate: -50% -50%;
+  border-radius: 50%;
+  filter: blur(9rem);
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+.blob--rose {
+  background: radial-gradient(circle at center, #ffb3c6, #ff6b9d);
+}
+
+.blob--sky {
+  background: radial-gradient(circle at center, #a8d8f0, #5bc4e8);
+}
+
+.blob--amber {
+  background: radial-gradient(circle at center, #ffd9a0, #ffb347);
+}
+
+.blob--violet {
+  background: radial-gradient(circle at center, #d4b8f0, #a78bda);
+}
+
+.blob--emerald {
+  background: radial-gradient(circle at center, #a8e6d4, #4ecba8);
+}
