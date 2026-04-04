@@ -16,10 +16,9 @@ const REVEAL_START = 0.75;
 
 export function ScrollGradients() {
   const containerRef = useRef(null);
-  const lenisRef = useLenis();
+  const lenis = useLenis();
 
   useEffect(() => {
-    const lenis = lenisRef?.current;
     if (!lenis) return;
 
     const container = containerRef.current;
@@ -46,7 +45,7 @@ export function ScrollGradients() {
 
     lenis.on("scroll", onScroll);
     return () => lenis.off("scroll", onScroll);
-  }, [lenisRef]);
+  }, [lenis]);
 
   return (
     <div className="scroll-gradients" ref={containerRef} aria-hidden="true">
