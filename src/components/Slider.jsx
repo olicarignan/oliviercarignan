@@ -402,34 +402,36 @@ export function Slider({ projects }) {
                 if (dragDistRef.current < 5) handleItemClick(i);
               }}
             >
-              <picture>
-                <source srcSet={img.webpSrcSet} type="image/webp" />
-                <img
-                  src={img.src}
-                  srcSet={img.srcSet}
-                  alt={img.alt || project.title}
-                  draggable={false}
-                  fetchPriority={i === 0 ? "high" : undefined}
-                  loading={i <= 1 ? "eager" : "lazy"}
-                  decoding={i <= 1 ? "sync" : "async"}
-                  style={img.base64 ? {
-                    backgroundImage: `url(${img.base64})`,
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                  } : undefined}
-                />
-              </picture>
-              {videoUrl && (
-                <video
-                  src={videoUrl}
-                  muted
-                  playsInline
-                  loop
-                  preload="none"
-                  draggable={false}
-                />
-              )}
+              <div className="slider__item-inner">
+                <picture>
+                  <source srcSet={img.webpSrcSet} type="image/webp" />
+                  <img
+                    src={img.src}
+                    srcSet={img.srcSet}
+                    alt={img.alt || project.title}
+                    draggable={false}
+                    fetchPriority={i === 0 ? "high" : undefined}
+                    loading={i <= 1 ? "eager" : "lazy"}
+                    decoding={i <= 1 ? "sync" : "async"}
+                    style={img.base64 ? {
+                      backgroundImage: `url(${img.base64})`,
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
+                    } : undefined}
+                  />
+                </picture>
+                {videoUrl && (
+                  <video
+                    src={videoUrl}
+                    muted
+                    playsInline
+                    loop
+                    preload="none"
+                    draggable={false}
+                  />
+                )}
+              </div>
             </motion.div>
           );
         })}

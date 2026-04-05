@@ -22,37 +22,39 @@
   .slider__item {
     flex-shrink: 0;
     scroll-snap-align: start;
-    position: relative;
-    container-type: inline-size;
-    filter: none;
-    transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1),
-      scale 0.35s cubic-bezier(0.2, 0, 0, 1),
-      filter 0.35s cubic-bezier(0.2, 0, 0, 1);
 
-    img,
-    video {
-      display: block;
-      -webkit-mask-image: url("/images/svg/squircle.svg");
-      mask-image: url("/images/svg/squircle.svg");
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-      cursor: url("/images/svg/cursor_plus.svg") 8 8, zoom-in;
-      width: 100%;
-      object-fit: cover;
-      aspect-ratio: 3 / 2;
+    .slider__item-inner {
+      position: relative;
+      container-type: inline-size;
+      border-radius: 16px;
+      overflow: hidden;
+      filter: none;
+      transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1),
+        transform 0.35s cubic-bezier(0.2, 0, 0, 1),
+        filter 0.35s cubic-bezier(0.2, 0, 0, 1);
+
+      @media (hover: hover) {
+        &:hover {
+          translate: 0 -6px;
+          transform: scale(1.01);
+          filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02));
+        }
+      }
     }
 
-    &.slider__item--transitioning {
+    &.slider__item--transitioning .slider__item-inner {
       filter: none;
       transition: none;
     }
 
-    @media (hover: hover) {
-      &:hover {
-        translate: 0 -6px;
-        scale: 1.01;
-        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02));
-      }
+    img,
+    video {
+      display: block;
+      border-radius: 16px;
+      cursor: url("/images/svg/cursor_plus.svg") 8 8, zoom-in;
+      width: 100%;
+      object-fit: cover;
+      aspect-ratio: 3 / 2;
     }
 
     video {
