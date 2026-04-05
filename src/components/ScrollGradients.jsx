@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useLenis } from "@/utils/lenis";
+import gsap from "gsap";
+import { Observer } from "gsap/Observer";
+
+gsap.registerPlugin(Observer);
 
 const BLOBS = [
   { className: "blob blob--rose",    x: "15%",  y: "60%", size: "52rem" },
@@ -16,36 +19,37 @@ const REVEAL_START = 0.75;
 
 export function ScrollGradients() {
   const containerRef = useRef(null);
-  const lenis = useLenis();
 
   useEffect(() => {
-    if (!lenis) return;
-
     const container = containerRef.current;
     if (!container) return;
 
-    function onScroll({ scroll, limit, velocity }) {
-      const progress = limit > 0 ? scroll / limit : 0;
+    const observer = Observer.create({
+      type: "scroll",
+      onChangeY(self) {
+        const maxScroll =
+          document.documentElement.scrollHeight - window.innerHeight;
+        const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
 
-      // 0 → 1 as scroll progress moves from REVEAL_START to 1
-      const revealProgress = Math.max(
-        0,
-        Math.min(1, (progress - REVEAL_START) / (1 - REVEAL_START))
-      );
+        // 0 → 1 as scroll progress moves from REVEAL_START to 1
+        const revealProgress = Math.max(
+          0,
+          Math.min(1, (progress - REVEAL_START) / (1 - REVEAL_START))
+        );
 
-      // Velocity-driven inertia offset: scrolling fast pushes blobs down slightly
-      const inertiaY = velocity * 6;
+        // velocityY is px/s — scale down for a subtle inertia offset
+        const inertiaY = self.velocityY * 0.004;
 
-      // Blobs start 40px below their natural position and rise into place
-      const baseY = (1 - revealProgress) * 40 + inertiaY;
+        // Blobs start 40px below their natural position and rise into place
+        const baseY = (1 - revealProgress) * 40 + inertiaY;
 
-      container.style.opacity = revealProgress.toFixed(4);
-      container.style.transform = `translateY(${baseY.toFixed(2)}px)`;
-    }
+        container.style.opacity = revealProgress.toFixed(4);
+        container.style.transform = `translateY(${baseY.toFixed(2)}px)`;
+      },
+    });
 
-    lenis.on("scroll", onScroll);
-    return () => lenis.off("scroll", onScroll);
-  }, [lenis]);
+    return () => observer.kill();
+  }, []);
 
   return (
     <div className="scroll-gradients" ref={containerRef} aria-hidden="true">
