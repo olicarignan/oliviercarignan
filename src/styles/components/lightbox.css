@@ -53,6 +53,7 @@
   &:not(.lightbox--revealed) .lightbox__item:not(.lightbox__item--active) {
     opacity: 0;
     filter: blur(4px);
+    transform: scale(0.92);
     transition: opacity 1s cubic-bezier(0, 0.55, 0.45, 1),
       transform 1s cubic-bezier(0, 0.55, 0.45, 1),
       filter 1s cubic-bezier(0, 0.55, 0.45, 1);
@@ -117,7 +118,8 @@
   &.lightbox--revealed .lightbox__item {
     opacity: 1;
     filter: blur(0px);
-    transition: filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     video {
       transition: opacity 0.3s ease;
@@ -141,8 +143,10 @@
   &.lightbox--closing .lightbox__item:not(.lightbox__item--active) {
     opacity: 0;
     filter: blur(4px);
+    transform: scale(0.92);
     transition: opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1),
-      filter 0.3s cubic-bezier(0, 0.55, 0.45, 1);
+      filter 0.3s cubic-bezier(0, 0.55, 0.45, 1),
+      transform 0.3s cubic-bezier(0, 0.55, 0.45, 1);
   }
 
   &.lightbox--closing .lightbox__close {

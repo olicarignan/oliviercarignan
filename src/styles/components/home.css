@@ -1,13 +1,25 @@
 .home {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  padding-bottom: 20rem;
 
   > * {
-    margin-bottom: 2.4rem;
+    margin-bottom: 1lh;
+    grid-column: 1/-1;
   }
 
-  article {
-    p {
-      margin-bottom: 2.4rem;
+  @media (min-width: 600px) {
+    padding-bottom: 28rem;
+
+    p,
+    .clients,
+    .connect {
+      grid-column: 2/-2;
+    }
+
+    .clients {
+      margin-bottom: 12rem;
     }
   }
 }

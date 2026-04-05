@@ -5,7 +5,7 @@
 
   display: grid;
   margin-inline: auto;
-  max-width: calc(42rem + (var(--padding) * 2));
+  max-width: calc(42rem + (var(--padding) * 2) + (var(--gap) * 2));
   width: 100%;
   gap: var(--gap);
   grid-template-columns:
@@ -13,6 +13,11 @@
     var(--padding);
   row-gap: 0;
   grid-auto-rows: min-content;
+
+  @media (min-width: 600px) {
+    --columns: 6;
+    max-width: calc(604px + (var(--padding) * 2)  + (var(--gap) * 2));
+  }
 
   .subgrid {
     display: grid;

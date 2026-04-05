@@ -47,6 +47,9 @@ export function Slider({ projects }) {
       const style = getComputedStyle(subgrid);
       const gap = parseFloat(style.columnGap) || 0;
       const rect = subgrid.getBoundingClientRect();
+      const columns = parseInt(getComputedStyle(document.querySelector(".grid")).getPropertyValue("--columns")) || 4;
+      const colWidth = (rect.width - (columns - 1) * gap) / columns;
+      const isDesktop = window.matchMedia("(min-width: 600px)").matches;
       setLayout({
         inset: rect.left - 12,
         itemWidth: rect.width + 24,
@@ -112,24 +115,6 @@ export function Slider({ projects }) {
     return () => track.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  useEffect(() => {
-    if (lightboxOpen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openLightbox(activeIndex);
-      } else if (e.key === "ArrowRight") {
-        const next = Math.min(activeIndex + 1, projects.length - 1);
-        if (next !== activeIndex) scrollToIndex(next);
-      } else if (e.key === "ArrowLeft") {
-        const prev = Math.max(activeIndex - 1, 0);
-        if (prev !== activeIndex) scrollToIndex(prev);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeIndex, projects.length, scrollToIndex, lightboxOpen]);
 
   const openLightbox = useCallback((index) => {
     const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
@@ -451,7 +436,7 @@ export function Slider({ projects }) {
       </motion.div>
       <motion.div
         className="slider__meta"
-        style={{ paddingLeft: `${layout.inset}px` }}
+        style={{ paddingLeft: `${layout.inset + 20}px` }}
         variants={itemFadeIn}
         onAnimationComplete={() => setHasLoaded(true)}
       >

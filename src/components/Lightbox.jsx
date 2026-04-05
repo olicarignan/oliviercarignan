@@ -31,6 +31,7 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
           const edgeDist = Math.max(0, dist - halfItem);
           const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
           item.style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
+          item.style.transform = `scale(${1 - norm * 0.08})`;
         });
       }
     }, 500);
@@ -73,12 +74,13 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
         closest = i;
       }
 
-      // Dim items based on distance from center
+      // Dim and scale items based on distance from center
       if (revealedRef.current) {
         const halfItem = rect.width / 2;
         const edgeDist = Math.max(0, dist - halfItem);
         const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
         item.style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
+        item.style.transform = `scale(${1 - norm * 0.08})`;
       }
     });
 

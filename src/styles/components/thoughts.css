@@ -1,0 +1,63 @@
+.thoughts {
+  width: 100vw;
+  margin-bottom: 8rem;
+  margin-left: calc(-50vw + 50%);
+
+  .thoughts__title {
+    color: var(--accent-color);
+    margin-bottom: 0.8rem;
+  }
+
+  .thoughts__track {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: clip;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-block: 48px;
+    margin-block: -48px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .thoughts__item {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    filter: none;
+    transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1),
+      scale 0.35s cubic-bezier(0.2, 0, 0, 1),
+      filter 0.35s cubic-bezier(0.2, 0, 0, 1);
+
+    @media (hover: hover) {
+      &:hover {
+        translate: 0 -6px;
+        scale: 1.01;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
+      }
+    }
+  }
+
+  .thoughts__card {
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.6rem 2rem;
+
+    .meta {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+  }
+
+  @media (min-width: 600px) {
+    margin-bottom: 12rem;
+  }
+}

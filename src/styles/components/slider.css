@@ -1,6 +1,6 @@
 .slider {
   width: 100vw;
-  margin-block: 6rem;
+  margin-block: 8rem;
   margin-left: calc(-50vw + 50%);
 
   .slider__track {
@@ -24,10 +24,10 @@
     scroll-snap-align: start;
     position: relative;
     container-type: inline-size;
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
-    transition: translate 0.2s cubic-bezier(0.2, 0, 0, 1),
-      scale 0.2s cubic-bezier(0.2, 0, 0, 1),
-      filter 0.2s cubic-bezier(0.2, 0, 0, 1);
+    filter: none;
+    transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1),
+      scale 0.35s cubic-bezier(0.2, 0, 0, 1),
+      filter 0.35s cubic-bezier(0.2, 0, 0, 1);
 
     img,
     video {
@@ -51,7 +51,7 @@
       &:hover {
         translate: 0 -6px;
         scale: 1.01;
-        filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.15)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02));
       }
     }
 
@@ -72,10 +72,7 @@
   }
 
   .slider__meta {
-    margin-top: 1.2rem;
-    > div {
-      padding-inline: 1.2rem;
-    }
+    margin-top: 1.6rem;
 
     h3 {
       color: var(--text-color);
@@ -83,5 +80,9 @@
     p {
       color: var(--accent-color);
     }
+  }
+
+  @media (min-width: 600px) {
+    margin-block: 12rem;
   }
 }
