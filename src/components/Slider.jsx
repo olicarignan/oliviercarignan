@@ -436,7 +436,7 @@ export function Slider({ projects }) {
       </motion.div>
       <motion.div
         className="slider__meta"
-        style={{ paddingLeft: `${layout.inset + 20}px` }}
+        style={{ paddingLeft: `${layout.inset + 12}px` }}
         variants={itemFadeIn}
         onAnimationComplete={() => setHasLoaded(true)}
       >
