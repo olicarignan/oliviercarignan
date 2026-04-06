@@ -23,6 +23,10 @@
     flex-shrink: 0;
     scroll-snap-align: start;
 
+    @media (max-width: 599px) {
+      scroll-snap-align: center;
+    }
+
     .slider__item-inner {
       position: relative;
       container-type: inline-size;
@@ -32,6 +36,11 @@
       transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1),
         transform 0.35s cubic-bezier(0.2, 0, 0, 1),
         filter 0.35s cubic-bezier(0.2, 0, 0, 1);
+
+      @media (max-width: 599px) {
+        transition: none;
+        will-change: transform, filter;
+      }
 
       @media (hover: hover) {
         &:hover {

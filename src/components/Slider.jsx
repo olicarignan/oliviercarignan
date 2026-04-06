@@ -31,7 +31,7 @@ export function Slider({ projects }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [layout, setLayout] = useState({ inset: 0, itemWidth: 0 });
+  const [layout, setLayout] = useState({ inset: 0, itemWidth: 0, isMobile: false });
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [sliderVideosHidden, setSliderVideosHidden] = useState(false);
   const dragDistRef = useRef(0);
@@ -50,10 +50,21 @@ export function Slider({ projects }) {
       const columns = parseInt(getComputedStyle(document.querySelector(".grid")).getPropertyValue("--columns")) || 4;
       const colWidth = (rect.width - (columns - 1) * gap) / columns;
       const isDesktop = window.matchMedia("(min-width: 600px)").matches;
-      setLayout({
-        inset: rect.left - 12,
-        itemWidth: rect.width + 24,
-      });
+      if (isDesktop) {
+        setLayout({
+          inset: rect.left - 12,
+          itemWidth: rect.width + 24,
+          isMobile: false,
+        });
+      } else {
+        const mobileItemWidth = window.innerWidth * 0.82;
+        const mobilePad = (window.innerWidth - mobileItemWidth) / 2;
+        setLayout({
+          inset: mobilePad,
+          itemWidth: mobileItemWidth,
+          isMobile: true,
+        });
+      }
     };
 
     measure();
@@ -73,10 +84,39 @@ export function Slider({ projects }) {
       if (!track || !layout.itemWidth) return;
       const items = track.querySelectorAll(".slider__item");
       if (!items[index]) return;
-      items[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+      items[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: layout.isMobile ? "center" : "start" });
     },
-    [layout.itemWidth]
+    [layout.itemWidth, layout.isMobile]
   );
+
+  const updateMobileScales = useCallback((track) => {
+    const items = track.querySelectorAll(".slider__item");
+    const center = window.innerWidth / 2;
+    let closest = 0;
+    let closestDist = Infinity;
+
+    items.forEach((item, i) => {
+      const rect = item.getBoundingClientRect();
+      const itemCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(itemCenter - center);
+
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = i;
+      }
+
+      const halfItem = rect.width / 2;
+      const edgeDist = Math.max(0, dist - halfItem);
+      const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
+      const inner = item.querySelector(".slider__item-inner");
+      if (inner) {
+        inner.style.transform = `scale(${1 - norm * 0.06})`;
+        inner.style.filter = `brightness(${1 - norm * 0.15})`;
+      }
+    });
+
+    return closest;
+  }, []);
 
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
@@ -84,6 +124,15 @@ export function Slider({ projects }) {
 
     // Skip detection when scroll was triggered by lightbox sync
     if (externalScroll.current) return;
+
+    if (layout.isMobile) {
+      const closest = updateMobileScales(track);
+      setActiveIndex(closest);
+      setIsScrolling(true);
+      clearTimeout(scrollTimer.current);
+      scrollTimer.current = setTimeout(() => setIsScrolling(false), 150);
+      return;
+    }
 
     setIsScrolling(true);
     clearTimeout(scrollTimer.current);
@@ -106,7 +155,7 @@ export function Slider({ projects }) {
       setActiveIndex(closest);
       setIsScrolling(false);
     }, 150);
-  }, [layout.inset]);
+  }, [layout.inset, layout.isMobile, updateMobileScales]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -114,6 +163,20 @@ export function Slider({ projects }) {
     track.addEventListener("scroll", handleScroll, { passive: true });
     return () => track.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
+
+  // Apply/clean mobile scales
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    if (layout.isMobile) {
+      requestAnimationFrame(() => updateMobileScales(track));
+    } else {
+      track.querySelectorAll(".slider__item-inner").forEach((inner) => {
+        inner.style.transform = "";
+        inner.style.filter = "";
+      });
+    }
+  }, [layout.isMobile, updateMobileScales]);
 
 
   const openLightbox = useCallback((index) => {
@@ -384,7 +447,7 @@ export function Slider({ projects }) {
         style={{
           paddingLeft: `${layout.inset}px`,
           paddingRight: `${layout.inset}px`,
-          scrollPaddingLeft: `${layout.inset}px`,
+          scrollPaddingLeft: layout.isMobile ? undefined : `${layout.inset}px`,
           touchAction: "pan-x pan-y",
         }}
       >
