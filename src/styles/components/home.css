@@ -9,6 +9,10 @@
     grid-column: 1/-1;
   }
 
+  .clients {
+    margin-bottom: 8rem;
+  }
+
   @media (min-width: 600px) {
     padding-bottom: 28rem;
 
