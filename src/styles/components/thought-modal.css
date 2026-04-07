@@ -81,12 +81,13 @@
     min-height: 100%;
     display: flex;
     align-items: flex-end;
-    padding: 10vh 0;
+    padding: 10vh 0 0;
     position: relative;
     gap: 1.2rem;
 
     @media (min-width: 700px) {
       align-items: flex-start;
+      padding: 10vh 0 0;
     }
   }
 
