@@ -155,13 +155,13 @@ export function Footer() {
   const inputIntensity = useMotionValue(0);
 
   const smoothSpeed = useSpring(inputIntensity, {
-    stiffness: 40,
-    damping: 15,
+    stiffness: 25,
+    damping: 20,
   });
 
   const smoothOpacity = useSpring(
-    useTransform(inputIntensity, [0, 1], [0, 0.6]),
-    { stiffness: 30, damping: 20 }
+    useTransform(inputIntensity, [0, 1], [0, 0.4]),
+    { stiffness: 20, damping: 22 }
   );
 
   const { scrollYProgress } = useScroll();
@@ -175,7 +175,7 @@ export function Footer() {
     let scrollTimeout;
 
     const onWheel = (e) => {
-      const speed = Math.min(Math.abs(e.deltaY) / 60, 1);
+      const speed = Math.min(Math.abs(e.deltaY) / 120, 1);
       inputIntensity.set(speed);
     };
 
@@ -186,7 +186,7 @@ export function Footer() {
     const onTouchMove = (e) => {
       if (lastTouchY.current !== null) {
         const dy = Math.abs(e.touches[0].clientY - lastTouchY.current);
-        const speed = Math.min(dy / 10, 1);
+        const speed = Math.min(dy / 25, 1);
         inputIntensity.set(speed);
       }
       lastTouchY.current = e.touches[0].clientY;
@@ -210,7 +210,7 @@ export function Footer() {
 
       // Velocity = px per 16ms frame, normalized
       const velocity = dt > 0 ? (dy / dt) * 16 : 0;
-      const speed = Math.min(velocity / 15, 1);
+      const speed = Math.min(velocity / 30, 1);
       inputIntensity.set(speed);
 
       clearTimeout(scrollTimeout);
