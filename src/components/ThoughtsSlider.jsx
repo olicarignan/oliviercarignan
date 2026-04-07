@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "motion/react";
 import { ThoughtModal } from "./ThoughtModal";
 
@@ -23,6 +24,7 @@ const itemFadeIn = {
 };
 
 export function ThoughtsSlider({ thoughts = [] }) {
+  const router = useRouter();
   const trackRef = useRef(null);
   const scrollTimer = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
@@ -30,7 +32,22 @@ export function ThoughtsSlider({ thoughts = [] }) {
   const [isDragging, setIsDragging] = useState(false);
   const dragDistRef = useRef(0);
   const [layout, setLayout] = useState({ inset: 0, itemWidth: 0 });
-  const [selectedThought, setSelectedThought] = useState(null);
+
+  const thoughtParam = router.query.thought;
+  const selectedThought = thoughtParam
+    ? thoughts.find((t) => t.slug === thoughtParam) || null
+    : null;
+
+  const setSelectedThought = useCallback(
+    (thought) => {
+      if (thought) {
+        router.push({ query: { thought: thought.slug } }, undefined, { shallow: true });
+      } else {
+        router.push({ pathname: router.pathname }, undefined, { shallow: true });
+      }
+    },
+    [router],
+  );
 
   useEffect(() => {
     const measure = () => {

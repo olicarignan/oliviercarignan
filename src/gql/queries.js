@@ -3,6 +3,7 @@ export const getHome = `
   home {
       thoughts {
         id
+        slug
         title
         date
         content {
