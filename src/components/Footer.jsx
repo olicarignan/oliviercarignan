@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   motion,
   useSpring,
@@ -10,14 +10,13 @@ import {
   useMotionTemplate,
 } from "motion/react";
 
-const RIBBON_CONFIGS = [
+const RIBBONS = [
   {
     baseY: 60,
     waveAmp: 30,
     waveFreq: 0.4,
     speed: 0.15,
     phase: 0,
-    height: 120,
     baseOpacity: 0.5,
     color: "rgba(150, 170, 255, 0.6)",
     colorMid: "rgba(180, 140, 255, 0.3)",
@@ -28,7 +27,6 @@ const RIBBON_CONFIGS = [
     waveFreq: 0.3,
     speed: -0.12,
     phase: 1.8,
-    height: 140,
     baseOpacity: 0.4,
     color: "rgba(130, 210, 230, 0.5)",
     colorMid: "rgba(160, 180, 255, 0.25)",
@@ -39,7 +37,6 @@ const RIBBON_CONFIGS = [
     waveFreq: 0.5,
     speed: 0.18,
     phase: 3.6,
-    height: 100,
     baseOpacity: 0.35,
     color: "rgba(200, 150, 255, 0.45)",
     colorMid: "rgba(255, 170, 200, 0.2)",
@@ -50,19 +47,24 @@ const RIBBON_CONFIGS = [
     waveFreq: 0.35,
     speed: -0.1,
     phase: 5.2,
-    height: 130,
     baseOpacity: 0.3,
     color: "rgba(140, 230, 200, 0.4)",
     colorMid: "rgba(170, 200, 255, 0.2)",
   },
 ];
 
-function Ribbon({ config, speedMultiplier, opacityBoost, reducedMotion }) {
-  const pathRef = useRef(null);
-  const phase = useRef(config.phase);
+function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
+  const svgRef = useRef(null);
+  const pathRefs = useRef([]);
+  const phases = useRef(RIBBONS.map((r) => r.phase));
   const prevTime = useRef(null);
+  const isMobile = useRef(false);
 
-  const opacity = useMotionValue(config.baseOpacity);
+  const opacity = useMotionValue(0.5);
+
+  useEffect(() => {
+    isMobile.current = window.matchMedia("(max-width: 600px)").matches;
+  }, []);
 
   useAnimationFrame((time) => {
     if (reducedMotion) return;
@@ -74,60 +76,75 @@ function Ribbon({ config, speedMultiplier, opacityBoost, reducedMotion }) {
 
     const speed = speedMultiplier.get();
     const timeScale = 1 + speed * 12;
-    phase.current += dt * config.speed * timeScale;
-
     const ampScale = 1 + speed * 3;
-    const p = phase.current;
-    const freq = config.waveFreq;
-    const amp = config.waveAmp * ampScale;
+    const mobile = isMobile.current;
 
-    // Generate smooth wave path across the width
-    const oY = 100 + config.baseY;
-    const y0 = oY + Math.sin(p) * amp;
-    const y1 = oY + Math.sin(p + freq * 250) * amp;
-    const y2 = oY + Math.sin(p + freq * 500) * amp;
-    const y3 = oY + Math.sin(p + freq * 750) * amp;
-    const y4 = oY + Math.sin(p + freq * 1000) * amp;
+    for (let i = 0; i < RIBBONS.length; i++) {
+      // On mobile, skip every other ribbon
+      if (mobile && i % 2 !== 0) continue;
 
-    const d = `M0,${y0} C250,${y1} 500,${y2} 750,${y3} L1000,${y4} L1000,200 L0,200 Z`;
+      const r = RIBBONS[i];
+      const el = pathRefs.current[i];
+      if (!el) continue;
 
-    if (pathRef.current) {
-      pathRef.current.setAttribute("d", d);
+      phases.current[i] += dt * r.speed * timeScale;
+      const p = phases.current[i];
+      const amp = r.waveAmp * ampScale;
+      const oY = 100 + r.baseY;
+
+      const y0 = oY + Math.sin(p) * amp;
+      const y1 = oY + Math.sin(p + r.waveFreq * 250) * amp;
+      const y2 = oY + Math.sin(p + r.waveFreq * 500) * amp;
+      const y3 = oY + Math.sin(p + r.waveFreq * 750) * amp;
+      const y4 = oY + Math.sin(p + r.waveFreq * 1000) * amp;
+
+      el.setAttribute(
+        "d",
+        `M0,${y0} C250,${y1} 500,${y2} 750,${y3} L1000,${y4} L1000,200 L0,200 Z`
+      );
     }
 
     const boost = opacityBoost.get();
-    opacity.set(Math.min(config.baseOpacity + boost, 1));
+    opacity.set(0.5 + boost);
   });
 
   return (
     <motion.svg
-      className="footer__ribbon"
+      ref={svgRef}
+      className="footer__aurora-svg"
       viewBox="0 0 1000 200"
       preserveAspectRatio="none"
       style={{ opacity }}
     >
       <defs>
-        <filter id={`ribbon-blur-${config.phase}`} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="8" />
+        <filter id="aurora-blur" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="6" />
         </filter>
-        <linearGradient
-          id={`ribbon-grad-${config.phase}`}
-          x1="0%"
-          y1="0%"
-          x2="100%"
-          y2="0%"
-        >
-          <stop offset="0%" stopColor={config.color} />
-          <stop offset="50%" stopColor={config.colorMid} />
-          <stop offset="100%" stopColor={config.color} />
-        </linearGradient>
+        {RIBBONS.map((r, i) => (
+          <linearGradient
+            key={i}
+            id={`rg-${i}`}
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="0%"
+          >
+            <stop offset="0%" stopColor={r.color} />
+            <stop offset="50%" stopColor={r.colorMid} />
+            <stop offset="100%" stopColor={r.color} />
+          </linearGradient>
+        ))}
       </defs>
-      <path
-        ref={pathRef}
-        filter={`url(#ribbon-blur-${config.phase})`}
-        fill={`url(#ribbon-grad-${config.phase})`}
-        d={`M0,${100 + config.baseY} C250,${100 + config.baseY} 500,${100 + config.baseY} 750,${100 + config.baseY} L1000,${100 + config.baseY} L1000,200 L0,200 Z`}
-      />
+      <g filter="url(#aurora-blur)">
+        {RIBBONS.map((r, i) => (
+          <path
+            key={i}
+            ref={(el) => (pathRefs.current[i] = el)}
+            fill={`url(#rg-${i})`}
+            d={`M0,${100 + r.baseY} L1000,${100 + r.baseY} L1000,200 L0,200 Z`}
+          />
+        ))}
+      </g>
     </motion.svg>
   );
 }
@@ -202,17 +219,11 @@ export function Footer() {
 
   return (
     <motion.footer className="footer" ref={footerRef} style={{ height }}>
-      <div className="footer__aurora">
-        {RIBBON_CONFIGS.map((config, i) => (
-          <Ribbon
-            key={i}
-            config={config}
-            speedMultiplier={smoothSpeed}
-            opacityBoost={smoothOpacity}
-            reducedMotion={reducedMotion}
-          />
-        ))}
-      </div>
+      <Aurora
+        speedMultiplier={smoothSpeed}
+        opacityBoost={smoothOpacity}
+        reducedMotion={reducedMotion}
+      />
     </motion.footer>
   );
 }
