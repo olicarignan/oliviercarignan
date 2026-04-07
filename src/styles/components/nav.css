@@ -1,9 +1,8 @@
 .nav {
   grid-column: 1 / -1;
-  margin-bottom: 3.2rem;
+  margin-bottom: 2lh;
 
   @media (min-width: 600px) {
     grid-column: 2 / -2;
-    margin-bottom: 3.6rem;
   }
 }

@@ -4,6 +4,7 @@ export const getHome = `
       thoughts {
         id
         title
+        date
         content {
         blocks
         inlineBlocks
@@ -11,7 +12,7 @@ export const getHome = `
         value
         }
         featuredImage {
-        responsiveImage(imgixParams: { auto: format, q: 75, w: 680, h: 453, fit: crop }) {
+        responsiveImage {
             srcSet
             webpSrcSet
             sizes

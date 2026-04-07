@@ -11,8 +11,16 @@
     grid-column: 1/-1;
   }
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   .clients {
-    margin-bottom: 8rem;
+    margin-bottom: 4lh;
+
+    @media (min-width: 600px) {
+      margin-bottom: 6lh;
+    }
   }
 
   .connect {

@@ -110,7 +110,7 @@ export function Slider({ projects }) {
       const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
       const inner = item.querySelector(".slider__item-inner");
       if (inner) {
-        inner.style.transform = `scale(${1 - norm * 0.06})`;
+        inner.style.transform = `scale(${1.05 - norm * 0.1})`;
         inner.style.filter = `brightness(${1 - norm * 0.15})`;
       }
     });

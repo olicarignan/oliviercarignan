@@ -7,8 +7,8 @@
 
   .icon-link__icon {
     display: inline-flex;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 0.75em;
+    height: 0.75em;
     flex-shrink: 0;
     margin-left: -2rem;
     opacity: 0;
