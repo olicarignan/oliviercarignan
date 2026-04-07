@@ -2,7 +2,7 @@
   grid-column: 1 / -1;
   margin-bottom: 2lh;
 
-  @media (min-width: 600px) {
+  @media (min-width: 700px) {
     grid-column: 2 / -2;
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useAnimation } from "motion/react";
 
 function renderDast(node) {
   if (!node) return null;
@@ -79,19 +79,32 @@ function renderDast(node) {
   }
 }
 
-const layoutTransition = {
-  layout: { duration: 0.5, ease: [0.4, 0, 0, 1] },
+const panelTransition = {
+  y: { duration: 0.5, ease: [0.32, 0.72, 0, 1] },
+  opacity: { duration: 0.3 },
 };
 
-const bodyTransition = {
-  height: { delay: 0.4, duration: 0.45, ease: [0.4, 0, 0, 1] },
-  opacity: { delay: 0.55, duration: 0.3 },
-};
-
-export function ThoughtModal({ thought, layoutId, onClose }) {
+export function ThoughtModal({ thought, onClose }) {
   const img = thought.featuredImage?.responsiveImage;
   const content = thought.content?.value?.document;
   const date = new Date(thought.date);
+  const panelControls = useAnimation();
+  const dragRef = useRef({
+    startY: 0,
+    currentY: 0,
+    dragging: false,
+    engaged: false,
+  });
+  const panelRef = useRef(null);
+  const scrollRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+      const check = () => setIsMobile(window.innerWidth < 700);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -108,6 +121,76 @@ export function ThoughtModal({ thought, layoutId, onClose }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
+  // Mobile: overscroll-to-dismiss on the scroll container
+  useEffect(() => {
+    if (!isMobile) return;
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+
+    const onTouchStart = (e) => {
+      const touch = e.touches[0];
+      dragRef.current = {
+        startY: touch.clientY,
+        currentY: touch.clientY,
+        dragging: true,
+        engaged: false,
+      };
+    };
+
+    const onTouchMove = (e) => {
+      const d = dragRef.current;
+      if (!d.dragging) return;
+      const touch = e.touches[0];
+      d.currentY = touch.clientY;
+      const dy = touch.clientY - d.startY;
+
+      // Engage drag-to-dismiss when at top and pulling down
+      if (!d.engaged) {
+        if (scroll.scrollTop <= 0 && dy > 0) {
+          d.engaged = true;
+          d.startY = touch.clientY; // reset start so offset begins from 0
+        } else {
+          return; // let normal scroll happen
+        }
+      }
+
+      const offset = Math.max(0, touch.clientY - d.startY);
+      if (offset > 0) {
+        e.preventDefault(); // prevent scroll while dragging panel
+      }
+      if (panelRef.current) {
+        panelRef.current.style.transform = `translateY(${offset}px)`;
+        panelRef.current.style.transition = "none";
+      }
+    };
+
+    const onTouchEnd = () => {
+      const d = dragRef.current;
+      if (!d.dragging) return;
+      d.dragging = false;
+
+      if (!d.engaged) return;
+
+      const dy = d.currentY - d.startY;
+      if (dy > 120) {
+        panelControls.start({ y: "100%" }).then(onClose);
+      } else if (panelRef.current) {
+        panelRef.current.style.transition =
+          "transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)";
+        panelRef.current.style.transform = "translateY(0)";
+      }
+    };
+
+    scroll.addEventListener("touchstart", onTouchStart, { passive: true });
+    scroll.addEventListener("touchmove", onTouchMove, { passive: false });
+    scroll.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      scroll.removeEventListener("touchstart", onTouchStart);
+      scroll.removeEventListener("touchmove", onTouchMove);
+      scroll.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [isMobile, onClose, panelControls]);
+
   return (
     <div className="thought-modal">
       <motion.div
@@ -115,45 +198,55 @@ export function ThoughtModal({ thought, layoutId, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
+        transition={{ duration: 0.4 }}
         onClick={onClose}
       />
-      <motion.button
-        className="thought-modal__close"
-        onClick={onClose}
-        aria-label="Close"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8 }}
-        transition={{ delay: 0.5, duration: 0.2 }}
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+      <div className="thought-modal__scroll" ref={scrollRef} onClick={onClose}>
+        <motion.div
+          className="thought-modal__positioner grid"
+          ref={panelRef}
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={panelTransition}
         >
-          <path
-            d="M1 1L13 13M13 1L1 13"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </motion.button>
-      <div className="thought-modal__scroll" onClick={onClose}>
-        <div className="thought-modal__positioner grid">
+          {!isMobile && (
+            <motion.button
+              className="thought-modal__close"
+              onClick={onClose}
+              aria-label="Close"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ delay: 0.5, duration: 0.2 }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 1L13 13M13 1L1 13"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </motion.button>
+          )}
           <div
-            className="thought-modal__card"
+            className="thought-modal__card grid"
             onClick={(e) => e.stopPropagation()}
           >
+            {isMobile && (
+              <div className="thought-modal__drag-handle">
+                <div className="thought-modal__drag-line" />
+              </div>
+            )}
             <div className="thought-modal__card__inner subgrid">
-              <motion.div
-                className="thought-modal__image"
-                layoutId={layoutId}
-                transition={layoutTransition}
-              >
+              <div className="thought-modal__image">
                 {img && (
                   <picture>
                     <source srcSet={img.webpSrcSet} type="image/webp" />
@@ -165,25 +258,24 @@ export function ThoughtModal({ thought, layoutId, onClose }) {
                   </picture>
                 )}
                 <div className="thought-modal__image-overlay" />
-              </motion.div>
-              <motion.div
-                className="thought-modal__body"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={bodyTransition}
-              >
+              </div>
+              <div className="thought-modal__body">
                 <div className="thought-modal__meta">
                   <h2 className="thought-modal__title">{thought.title}</h2>
-                  <span>{date.toLocaleDateString("en-CA", {month: "long", year: "numeric"})}</span>
+                  <span>
+                    {date.toLocaleDateString("en-CA", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
                 </div>
                 <div className="thought-modal__body-inner">
                   {content && renderDast(content)}
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

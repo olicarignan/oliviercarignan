@@ -63,7 +63,7 @@ function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
   const opacity = useMotionValue(0.5);
 
   useEffect(() => {
-    setIsMobile(window.matchMedia("(max-width: 600px)").matches);
+    setIsMobile(window.matchMedia("(max-width: 700px)").matches);
   }, []);
 
   useAnimationFrame((time) => {

@@ -4,7 +4,7 @@
   margin-bottom: 4.75lh;
   margin-left: calc(-50vw + 50%);
 
-  @media (min-width: 600px) {
+  @media (min-width: 700px) {
     margin-top: 4lh;
     margin-bottom: 6.75lh;
   }
@@ -29,7 +29,7 @@
     flex-shrink: 0;
     scroll-snap-align: start;
 
-    @media (max-width: 599px) {
+    @media (max-width: 699px) {
       scroll-snap-align: center;
     }
 
@@ -44,7 +44,7 @@
         transform 0.35s cubic-bezier(0.2, 0, 0, 1),
         filter 0.35s cubic-bezier(0.2, 0, 0, 1);
 
-      @media (max-width: 599px) {
+      @media (max-width: 699px) {
         transition: none;
         will-change: transform, filter;
       }
@@ -103,7 +103,7 @@
     }
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 700px) {
     margin-block: 12rem;
   }
 }

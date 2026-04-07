@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence, LayoutGroup } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { ThoughtModal } from "./ThoughtModal";
 
 const staggerItems = {
@@ -47,7 +47,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
           ),
         ) || 4;
       const colWidth = (rect.width - (columns - 1) * subgridGap) / columns;
-      const isDesktop = window.matchMedia("(min-width: 600px)").matches;
+      const isDesktop = window.matchMedia("(min-width: 700px)").matches;
 
       let cardWidth;
       if (isDesktop) {
@@ -175,7 +175,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
   );
 
   return (
-    <LayoutGroup>
+    <>
       <motion.div className="thoughts" variants={staggerItems}>
         <motion.h3
           className="thoughts__title"
@@ -203,7 +203,6 @@ export function ThoughtsSlider({ thoughts = [] }) {
             console.log(date)
 
             const img = thought.featuredImage?.responsiveImage;
-            const isSelected = selectedThought?.id === thought.id;
             return (
               <motion.div
                 key={thought.id}
@@ -211,13 +210,11 @@ export function ThoughtsSlider({ thoughts = [] }) {
                 variants={itemFadeIn}
                 style={{
                   width: `${layout.itemWidth}px`,
-                  visibility: isSelected ? "hidden" : undefined,
                 }}
                 onClick={() => handleCardClick(thought)}
               >
-                <motion.div
+                <div
                   className="thoughts__card"
-                  layoutId={`thought-${thought.id}`}
                   style={{ cursor: "pointer" }}
                 >
                   {img && (
@@ -256,7 +253,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
                     </defs>
                     </svg>
                   </div>
-                </motion.div>
+                </div>
               </motion.div>
             );
           })}
@@ -266,11 +263,10 @@ export function ThoughtsSlider({ thoughts = [] }) {
         {selectedThought && (
           <ThoughtModal
             thought={selectedThought}
-            layoutId={`thought-image-${selectedThought.id}`}
             onClose={() => setSelectedThought(null)}
           />
         )}
       </AnimatePresence>
-    </LayoutGroup>
+    </>
   );
 }

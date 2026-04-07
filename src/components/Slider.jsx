@@ -49,7 +49,7 @@ export function Slider({ projects }) {
       const rect = subgrid.getBoundingClientRect();
       const columns = parseInt(getComputedStyle(document.querySelector(".grid")).getPropertyValue("--columns")) || 4;
       const colWidth = (rect.width - (columns - 1) * gap) / columns;
-      const isDesktop = window.matchMedia("(min-width: 600px)").matches;
+      const isDesktop = window.matchMedia("(min-width: 700px)").matches;
       if (isDesktop) {
         setLayout({
           inset: rect.left - 12,
