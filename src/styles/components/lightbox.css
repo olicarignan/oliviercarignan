@@ -8,7 +8,7 @@
   .lightbox__backdrop {
     position: absolute;
     inset: 0;
-    background-color: rgba(250, 250, 250, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(20px);
     cursor: url("/images/svg/cursor_x.svg") 8 8, zoom-out;
   }
