@@ -173,6 +173,7 @@ export function Footer() {
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
+    let lastScrollTime = performance.now();
     let scrollTimeout;
 
     const onWheel = (e) => {
@@ -180,10 +181,14 @@ export function Footer() {
       inputIntensity.set(speed);
     };
 
+    const onTouchStart = (e) => {
+      lastTouchY.current = e.touches[0].clientY;
+    };
+
     const onTouchMove = (e) => {
       if (lastTouchY.current !== null) {
         const dy = Math.abs(e.touches[0].clientY - lastTouchY.current);
-        const speed = Math.min(dy / 15, 1);
+        const speed = Math.min(dy / 10, 1);
         inputIntensity.set(speed);
       }
       lastTouchY.current = e.touches[0].clientY;
@@ -191,12 +196,23 @@ export function Footer() {
 
     const onTouchEnd = () => {
       lastTouchY.current = null;
+      // If page won't momentum-scroll (e.g. already at bottom),
+      // onScroll won't fire, so schedule a fallback decay
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => inputIntensity.set(0), 150);
     };
 
+    // Catches momentum scrolling after finger lifts
     const onScroll = () => {
+      const now = performance.now();
+      const dt = now - lastScrollTime;
+      lastScrollTime = now;
       const dy = Math.abs(window.scrollY - lastScrollY);
       lastScrollY = window.scrollY;
-      const speed = Math.min(dy / 40, 1);
+
+      // Velocity = px per 16ms frame, normalized
+      const velocity = dt > 0 ? (dy / dt) * 16 : 0;
+      const speed = Math.min(velocity / 15, 1);
       inputIntensity.set(speed);
 
       clearTimeout(scrollTimeout);
@@ -204,12 +220,14 @@ export function Footer() {
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
     window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("scroll", onScroll);
