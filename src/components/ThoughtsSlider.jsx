@@ -68,10 +68,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
 
       let cardWidth;
       if (isDesktop) {
-        const availableCols = 5;
-        const availableWidth =
-          availableCols * colWidth + (availableCols - 1) * subgridGap;
-        cardWidth = (availableWidth - 8) / 2;
+        cardWidth = 3 * colWidth + 2 * subgridGap;
       } else {
         cardWidth = 3 * colWidth + 2 * subgridGap;
       }
