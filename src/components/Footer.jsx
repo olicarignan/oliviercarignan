@@ -58,12 +58,12 @@ function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
   const pathRefs = useRef([]);
   const phases = useRef(RIBBONS.map((r) => r.phase));
   const prevTime = useRef(null);
-  const isMobile = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const opacity = useMotionValue(0.5);
 
   useEffect(() => {
-    isMobile.current = window.matchMedia("(max-width: 600px)").matches;
+    setIsMobile(window.matchMedia("(max-width: 600px)").matches);
   }, []);
 
   useAnimationFrame((time) => {
@@ -77,11 +77,9 @@ function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
     const speed = speedMultiplier.get();
     const timeScale = 1 + speed * 12;
     const ampScale = 1 + speed * 3;
-    const mobile = isMobile.current;
-
     for (let i = 0; i < RIBBONS.length; i++) {
       // On mobile, skip every other ribbon
-      if (mobile && i % 2 !== 0) continue;
+      if (isMobile && i % 2 !== 0) continue;
 
       const r = RIBBONS[i];
       const el = pathRefs.current[i];
@@ -118,7 +116,7 @@ function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
     >
       <defs>
         <filter id="aurora-blur" x="-10%" y="-10%" width="120%" height="120%">
-          <feGaussianBlur stdDeviation="6" />
+          <feGaussianBlur stdDeviation={isMobile ? 3 : 6} />
         </filter>
         {RIBBONS.map((r, i) => (
           <linearGradient
