@@ -49,7 +49,7 @@ export function Slider({ projects }) {
       const rect = subgrid.getBoundingClientRect();
       const columns = parseInt(getComputedStyle(document.querySelector(".grid")).getPropertyValue("--columns")) || 4;
       const colWidth = (rect.width - (columns - 1) * gap) / columns;
-      const isDesktop = window.matchMedia("(min-width: 600px)").matches;
+      const isDesktop = window.matchMedia("(min-width: 700px)").matches;
       if (isDesktop) {
         setLayout({
           inset: rect.left - 12,
@@ -110,7 +110,7 @@ export function Slider({ projects }) {
       const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
       const inner = item.querySelector(".slider__item-inner");
       if (inner) {
-        inner.style.transform = `scale(${1 - norm * 0.06})`;
+        inner.style.transform = `scale(${1.05 - norm * 0.1})`;
         inner.style.filter = `brightness(${1 - norm * 0.15})`;
       }
     });

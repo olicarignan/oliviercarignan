@@ -14,7 +14,7 @@
   row-gap: 0;
   grid-auto-rows: min-content;
 
-  @media (min-width: 600px) {
+  @media (min-width: 700px) {
     --columns: 6;
     max-width: calc(604px + (var(--padding) * 2)  + (var(--gap) * 2));
   }

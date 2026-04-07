@@ -11,8 +11,16 @@
     grid-column: 1/-1;
   }
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   .clients {
-    margin-bottom: 8rem;
+    margin-bottom: 4lh;
+
+    @media (min-width: 700px) {
+      margin-bottom: 6lh;
+    }
   }
 
   .connect {
@@ -20,7 +28,7 @@
     z-index: 1;
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 700px) {
     padding-bottom: 25dvh;
 
     p,
