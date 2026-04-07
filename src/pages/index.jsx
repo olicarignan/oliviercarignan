@@ -1,10 +1,11 @@
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import Layout from "@/layouts/Layout";
 import { IconLink } from "@/components/IconLink";
 import { fetchDato } from "@/utils/datocms";
 import { getHome } from "@/gql/queries";
 import { Slider } from "@/components/Slider";
 import { ThoughtsSlider } from "@/components/ThoughtsSlider";
+import { Footer } from "@/components/Footer";
 
 const fadeIn = {
   initial: { opacity: 0, y: 8, filter: "blur(4px)" },
@@ -92,7 +93,9 @@ export default function Home({ data }) {
             </li>
           </ul>
         </motion.div>
+
       </main>
+      <Footer />
     </Layout>
   );
 }
