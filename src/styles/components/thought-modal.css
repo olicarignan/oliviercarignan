@@ -87,7 +87,7 @@
 
     @media (min-width: 700px) {
       align-items: flex-start;
-      padding: 10vh 0 0;
+      padding: 10vh 0;
     }
   }
 
