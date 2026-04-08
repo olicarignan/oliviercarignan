@@ -32,7 +32,8 @@
     flex-shrink: 0;
     scroll-snap-align: start;
     filter: none;
-    transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1),
+    transition:
+      translate 0.35s cubic-bezier(0.2, 0, 0, 1),
       scale 0.35s cubic-bezier(0.2, 0, 0, 1),
       filter 0.35s cubic-bezier(0.2, 0, 0, 1);
 
@@ -40,16 +41,21 @@
       &:hover {
         translate: 0 -6px;
         scale: 1.01;
-        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08))
+          drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
       }
     }
   }
 
   .thoughts__card {
     aspect-ratio: 4 / 5;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     position: relative;
+
+    @media (min-width: 700px) {
+      border-radius: 16px;
+    }
 
     picture {
       position: absolute;
@@ -72,7 +78,7 @@
       justify-content: space-between;
       align-items: flex-end;
 
-      @media (min-width:700px) {
+      @media (min-width: 700px) {
         bottom: 2rem;
         left: 2rem;
         right: 2rem;
@@ -122,7 +128,11 @@
     .thoughts__card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.6) 0%,
+        transparent 50%
+      );
       pointer-events: none;
     }
   }

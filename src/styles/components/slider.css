@@ -46,6 +46,7 @@
 
       @media (max-width: 699px) {
         transition: none;
+        border-radius: 12px;
         will-change: transform, filter;
       }
 

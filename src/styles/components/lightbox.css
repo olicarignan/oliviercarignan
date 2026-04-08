@@ -10,7 +10,9 @@
     inset: 0;
     background-color: rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(20px);
-    cursor: url("/images/svg/cursor_x.svg") 8 8, zoom-out;
+    cursor:
+      url("/images/svg/cursor_x.svg") 8 8,
+      zoom-out;
   }
 
   .lightbox__track {
@@ -47,14 +49,14 @@
     @media (min-width: 700px) {
       width: min(75vw, 120dvh);
     }
-
   }
 
   &:not(.lightbox--revealed) .lightbox__item:not(.lightbox__item--active) {
     opacity: 0;
     filter: blur(4px);
     transform: scale(0.92);
-    transition: opacity 1s cubic-bezier(0, 0.55, 0.45, 1),
+    transition:
+      opacity 1s cubic-bezier(0, 0.55, 0.45, 1),
       transform 1s cubic-bezier(0, 0.55, 0.45, 1),
       filter 1s cubic-bezier(0, 0.55, 0.45, 1);
   }
@@ -65,9 +67,13 @@
     width: 100%;
     object-fit: cover;
     aspect-ratio: 3 / 2;
-    border-radius: 16px;
+    border-radius: 12px;
     user-select: none;
     -webkit-user-drag: none;
+
+    @media screen {
+      border-radius: 16px;
+    }
   }
 
   .lightbox__item video {
@@ -77,7 +83,9 @@
   }
 
   .lightbox__item--active {
-    cursor: url("/images/svg/cursor_x.svg") 8 8, zoom-out;
+    cursor:
+      url("/images/svg/cursor_x.svg") 8 8,
+      zoom-out;
 
     video {
       opacity: 1;
@@ -116,7 +124,8 @@
   &.lightbox--revealed .lightbox__item {
     opacity: 1;
     filter: blur(0px);
-    transition: filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transition:
+      filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
       transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     video {
@@ -142,7 +151,8 @@
     opacity: 0;
     filter: blur(4px);
     transform: scale(0.92);
-    transition: opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1),
+    transition:
+      opacity 0.3s cubic-bezier(0, 0.55, 0.45, 1),
       filter 0.3s cubic-bezier(0, 0.55, 0.45, 1),
       transform 0.3s cubic-bezier(0, 0.55, 0.45, 1);
   }
@@ -153,9 +163,9 @@
   }
 
   &.lightbox--closing .lightbox__item--active {
-     opacity: 0;
-     transition: opacity 0s linear 0.4s;
-   }
+    opacity: 0;
+    transition: opacity 0s linear 0.4s;
+  }
 }
 
 /* View Transitions */
