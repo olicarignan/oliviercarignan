@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "motion/react";
 import { ThoughtModal } from "./ThoughtModal";
+import { handleTiltMove, handleTiltLeave } from "../utils/tilt";
 
 const staggerItems = {
   initial: {},
@@ -229,6 +230,8 @@ export function ThoughtsSlider({ thoughts = [] }) {
                 <div
                   className="thoughts__card"
                   style={{ cursor: "pointer" }}
+                  onMouseMove={handleTiltMove}
+                  onMouseLeave={handleTiltLeave}
                 >
                   {img && (
                     <picture>

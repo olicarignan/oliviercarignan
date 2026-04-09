@@ -4,7 +4,6 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { flushSync } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Lightbox } from "./Lightbox";
-
 const staggerItems = {
   initial: {},
   animate: {
