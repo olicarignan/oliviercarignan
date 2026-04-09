@@ -40,7 +40,7 @@
   .thought-modal__drag-handle {
     display: flex;
     justify-content: center;
-    padding: 1.2rem 0 0.4rem;
+    padding: 1.2rem 0 0;
     cursor: grab;
     touch-action: none;
     grid-column: 1/-1;
@@ -93,13 +93,13 @@
 
   .thought-modal__card {
     position: relative;
-    border-radius: 16px 16px 0 0;
+    border-radius: 24px 24px 0 0;
     cursor: default;
     background: var(--bg-color, #fff);
     grid-column: 1 / -1;
 
     @media (min-width: 700px) {
-      border-radius: 16px;
+      border-radius: 24px;
       padding: 0;
     }
   }

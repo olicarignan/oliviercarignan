@@ -214,7 +214,6 @@ export function ThoughtsSlider({ thoughts = [] }) {
         >
           {thoughts.map((thought, i) => {
             const date = new Date(thought.date)
-            console.log(date)
 
             const img = thought.featuredImage?.responsiveImage;
             return (
@@ -257,7 +256,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
                       <span>{date.toLocaleDateString("en-CA", {month: "long", year: "numeric"})}</span>
                     </div>
                     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_843_1349)">
+                    <g clipPath="url(#clip0_843_1349)">
                     <path d="M4 13.5455V9.00004H5.5V12.1819H9V13.5455H4ZM12.5 9.00004V5.81823H9V4.45459H14V9.00004H12.5Z" fill="#FAFAFA"/>
                     </g>
                     <defs>

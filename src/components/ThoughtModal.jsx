@@ -155,7 +155,7 @@ export function ThoughtModal({ thought, onClose }) {
       }
 
       const offset = Math.max(0, touch.clientY - d.startY);
-      if (offset > 0) {
+      if (offset > 0 && e.cancelable) {
         e.preventDefault(); // prevent scroll while dragging panel
       }
       if (panelRef.current) {
