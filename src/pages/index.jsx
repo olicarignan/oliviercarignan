@@ -23,19 +23,17 @@ export async function getStaticProps() {
 }
 
 export default function Home({ data }) {
-
   return (
     <Layout>
       <main className="home">
         <motion.p variants={fadeIn}>
-          I focus on the intersection of form and function to create experiences
-          that intuitively become an extension of oneself. I believe in ideas
-          over opinions, prototypes as the most valuable tool for collaboration,
-          and exploring one hundred ideas to find the right one.
+          I work across interfaces and brand to create holistic systems and
+          experiences that intuitively become an extension of oneself. I believe
+          in ideas over opinions and exploring one hundred ideas to find the right one.
         </motion.p>
         <motion.p variants={fadeIn}>
           I am driven by curiosity and strive for a high level of craftsmanship
-          and excellence in my work.
+          in my work.
         </motion.p>
         <motion.p variants={fadeIn}>
           Co-Founder &amp; Product Lead at{" "}
@@ -92,7 +90,6 @@ export default function Home({ data }) {
             </li>
           </ul>
         </motion.div>
-
       </main>
       <Footer />
     </Layout>
