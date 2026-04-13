@@ -18,8 +18,8 @@ const RIBBONS = [
     speed: 0.15,
     phase: 0,
     baseOpacity: 0.5,
-    color: "rgba(255, 100, 60, 0.55)",
-    colorMid: "rgba(255, 60, 150, 0.3)",
+    color: "rgba(255, 120, 80, 0.4)",
+    colorMid: "rgba(255, 80, 150, 0.2)",
   },
   {
     baseY: 45,
@@ -28,8 +28,8 @@ const RIBBONS = [
     speed: -0.12,
     phase: 1.8,
     baseOpacity: 0.4,
-    color: "rgba(60, 180, 255, 0.5)",
-    colorMid: "rgba(120, 80, 255, 0.3)",
+    color: "rgba(80, 170, 255, 0.35)",
+    colorMid: "rgba(130, 100, 240, 0.2)",
   },
   {
     baseY: 70,
@@ -38,8 +38,8 @@ const RIBBONS = [
     speed: 0.18,
     phase: 3.6,
     baseOpacity: 0.35,
-    color: "rgba(255, 50, 180, 0.5)",
-    colorMid: "rgba(180, 60, 255, 0.25)",
+    color: "rgba(240, 80, 170, 0.35)",
+    colorMid: "rgba(170, 80, 240, 0.18)",
   },
   {
     baseY: 50,
@@ -48,8 +48,8 @@ const RIBBONS = [
     speed: -0.1,
     phase: 5.2,
     baseOpacity: 0.3,
-    color: "rgba(0, 220, 180, 0.45)",
-    colorMid: "rgba(60, 140, 255, 0.25)",
+    color: "rgba(30, 200, 170, 0.3)",
+    colorMid: "rgba(70, 140, 240, 0.18)",
   },
 ];
 
