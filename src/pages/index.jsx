@@ -55,7 +55,7 @@ export default function Home({ data }) {
             Rounder
           </p>
         </motion.div>
-        <ThoughtsSlider thoughts={data.home.thoughts} />
+        <ThoughtsSlider thoughts={data.thoughts} />
 
         <motion.div className="connect" variants={fadeIn}>
           <h3>Connect</h3>

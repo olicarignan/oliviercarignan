@@ -1,30 +1,6 @@
 export const getHome = `
   query GetHome {
   home {
-      thoughts {
-        id
-        slug
-        title
-        date
-        content {
-        blocks
-        inlineBlocks
-        links
-        value
-        }
-        featuredImage {
-        responsiveImage {
-            srcSet
-            webpSrcSet
-            sizes
-            src
-            width
-            height
-            alt
-            base64
-          }
-        }
-      }
       projects {
         title
         id
@@ -43,6 +19,30 @@ export const getHome = `
         }
         video {
           url
+        }
+      }
+    }
+    thoughts: allThoughts {
+      id
+      slug
+      title
+      date
+      content {
+      blocks
+      inlineBlocks
+      links
+      value
+      }
+      featuredImage {
+      responsiveImage {
+          srcSet
+          webpSrcSet
+          sizes
+          src
+          width
+          height
+          alt
+          base64
         }
       }
     }
