@@ -76,6 +76,21 @@
     }
   }
 
+  .lightbox__img {
+    display: block;
+  }
+
+  .lightbox__img--high {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .lightbox__img--high.lightbox__img--ready {
+    opacity: 1;
+  }
+
   .lightbox__item video {
     position: absolute;
     inset: 0;

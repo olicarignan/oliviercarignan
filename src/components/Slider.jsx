@@ -466,10 +466,11 @@ export function Slider({ projects }) {
             >
               <div className="slider__item-inner">
                 <picture>
-                  <source srcSet={img.webpSrcSet} type="image/webp" />
+                  <source srcSet={img.webpSrcSet} sizes="(min-width: 700px) 628px, 82vw" type="image/webp" />
                   <img
                     src={img.src}
                     srcSet={img.srcSet}
+                    sizes="(min-width: 700px) 628px, 82vw"
                     alt={img.alt || project.title}
                     draggable={false}
                     fetchPriority={i === 0 ? "high" : undefined}

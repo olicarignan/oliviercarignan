@@ -293,41 +293,15 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
           touchAction: "pan-x",
         }}
       >
-        {projects.map((project, i) => {
-          const img = project.featuredImage.responsiveImage;
-          const videoUrl = project.video?.url;
-          const isActive = i === activeIndex;
-          const dist = Math.abs(i - activeIndex);
-          return (
-            <div
-              key={project.id}
-              className={`lightbox__item${isActive ? " lightbox__item--active" : ""}`}
-              style={!isActive ? { transitionDelay: `${dist * 0.06}s` } : undefined}
-              onClick={() => handleItemClick(i)}
-            >
-              <picture>
-                <source srcSet={img.webpSrcSet} type="image/webp" />
-                <img
-                  src={img.src}
-                  srcSet={img.srcSet}
-                  sizes="84vw"
-                  alt={img.alt || project.title}
-                  draggable={false}
-                />
-              </picture>
-              {videoUrl && (
-                <video
-                  src={videoUrl}
-                  muted
-                  playsInline
-                  loop
-                  preload="none"
-                  draggable={false}
-                />
-              )}
-            </div>
-          );
-        })}
+        {projects.map((project, i) => (
+          <LightboxItem
+            key={project.id}
+            project={project}
+            index={i}
+            activeIndex={activeIndex}
+            onClick={handleItemClick}
+          />
+        ))}
       </div>
       <button
         className="lightbox__close"
@@ -337,6 +311,58 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
           <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </button>
+    </div>
+  );
+}
+
+function LightboxItem({ project, index, activeIndex, onClick }) {
+  const lowRes = project.featuredImage.responsiveImage;
+  const highRes = project.lightboxImage.responsiveImage;
+  const videoUrl = project.video?.url;
+  const isActive = index === activeIndex;
+  const dist = Math.abs(index - activeIndex);
+  const [highResLoaded, setHighResLoaded] = useState(false);
+
+  return (
+    <div
+      className={`lightbox__item${isActive ? " lightbox__item--active" : ""}`}
+      style={!isActive ? { transitionDelay: `${dist * 0.06}s` } : undefined}
+      onClick={() => onClick(index)}
+    >
+      <picture className="lightbox__img lightbox__img--low">
+        <source srcSet={lowRes.webpSrcSet} sizes="84vw" type="image/webp" />
+        <img
+          src={lowRes.src}
+          srcSet={lowRes.srcSet}
+          sizes="84vw"
+          alt={lowRes.alt || project.title}
+          draggable={false}
+        />
+      </picture>
+      <picture className={`lightbox__img lightbox__img--high${highResLoaded ? " lightbox__img--ready" : ""}`}>
+        <source srcSet={highRes.webpSrcSet} sizes="84vw" type="image/webp" />
+        <img
+          src={highRes.src}
+          srcSet={highRes.srcSet}
+          sizes="84vw"
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          loading={dist <= 1 ? "eager" : "lazy"}
+          decoding="async"
+          onLoad={() => setHighResLoaded(true)}
+        />
+      </picture>
+      {videoUrl && (
+        <video
+          src={videoUrl}
+          muted
+          playsInline
+          loop
+          preload="none"
+          draggable={false}
+        />
+      )}
     </div>
   );
 }
