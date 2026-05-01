@@ -1,12 +1,23 @@
 import { useState } from "react";
+import Link from "next/link";
 
 import { ArrowIcon } from "@/components/ArrowIcon";
 import { CopyIcon } from "@/components/CopyIcon";
 import { CheckIcon } from "@/components/CheckIcon";
 
-export const IconLink = ({ href, children, isExternal }) => {
+export const IconLink = ({ href, children, isExternal, isInternal, icon }) => {
 
   const [copyState, setCopyState] = useState("idle");
+
+  if (isInternal) {
+    return (
+      <Link href={href} className="icon-link">
+        <span className="icon-link__icon">{icon ?? <ArrowIcon/>}</span>
+        <span className="icon-link__text">{children}</span>
+      </Link>
+    );
+  }
+
 
   const copyTextToClipboard = async (textToCopy) => {
     try {
