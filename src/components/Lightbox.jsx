@@ -12,6 +12,8 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
   const hasInitialized = useRef(false);
   const [neighborsRevealed, setNeighborsRevealed] = useState(false);
   const revealedRef = useRef(false);
+  const scrollRafTicking = useRef(false);
+  const lastActiveRef = useRef(initialIndex);
 
   // Reveal neighbors after view transition finishes
   useEffect(() => {
@@ -55,38 +57,53 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
     }
   }, [initialIndex]);
 
-  // Scroll handler — report index eagerly on every frame, settle internal state after debounce
+  // Scroll handler — rAF-batched. Only updates inline styles on items within ±2 of the active.
   const handleScroll = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) return;
+    if (scrollRafTicking.current) return;
+    scrollRafTicking.current = true;
+    requestAnimationFrame(() => {
+      scrollRafTicking.current = false;
+      const track = trackRef.current;
+      if (!track) return;
 
-    const items = track.querySelectorAll(".lightbox__item");
-    const center = window.innerWidth / 2;
+      const items = track.querySelectorAll(".lightbox__item");
+      const center = window.innerWidth / 2;
 
-    let closest = 0;
-    let closestDist = Infinity;
-    items.forEach((item, i) => {
-      const rect = item.getBoundingClientRect();
-      const itemCenter = rect.left + rect.width / 2;
-      const dist = Math.abs(itemCenter - center);
-      if (dist < closestDist) {
-        closestDist = dist;
-        closest = i;
+      const rects = new Array(items.length);
+      let closest = 0;
+      let closestDist = Infinity;
+      for (let i = 0; i < items.length; i++) {
+        const rect = items[i].getBoundingClientRect();
+        rects[i] = rect;
+        const itemCenter = rect.left + rect.width / 2;
+        const dist = Math.abs(itemCenter - center);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = i;
+        }
       }
 
-      // Dim and scale items based on distance from center
       if (revealedRef.current) {
-        const halfItem = rect.width / 2;
-        const edgeDist = Math.max(0, dist - halfItem);
-        const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
-        item.style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
-        item.style.transform = `scale(${1 - norm * 0.08})`;
+        const vw = window.innerWidth;
+        const last = lastActiveRef.current;
+        const lo = Math.min(closest, last) - 2;
+        const hi = Math.max(closest, last) + 2;
+        for (let i = Math.max(0, lo); i <= Math.min(items.length - 1, hi); i++) {
+          const rect = rects[i];
+          const itemCenter = rect.left + rect.width / 2;
+          const dist = Math.abs(itemCenter - center);
+          const halfItem = rect.width / 2;
+          const edgeDist = Math.max(0, dist - halfItem);
+          const norm = Math.min(edgeDist / (vw * 0.3), 1);
+          items[i].style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
+          items[i].style.transform = `scale(${1 - norm * 0.08})`;
+        }
       }
-    });
 
-    // Report to parent immediately so slider stays in sync
-    onActiveIndexChange(closest);
-    setActiveIndex(closest);
+      lastActiveRef.current = closest;
+      onActiveIndexChange(closest);
+      setActiveIndex(closest);
+    });
   }, [onActiveIndexChange]);
 
   useEffect(() => {

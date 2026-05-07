@@ -58,6 +58,8 @@ function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
   const pathRefs = useRef([]);
   const phases = useRef(RIBBONS.map((r) => r.phase));
   const prevTime = useRef(null);
+  const isVisibleRef = useRef(false);
+  const frameCount = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
 
   const opacity = useMotionValue(0.5);
@@ -66,8 +68,24 @@ function Aurora({ speedMultiplier, opacityBoost, reducedMotion }) {
     setIsMobile(window.matchMedia("(max-width: 700px)").matches);
   }, []);
 
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+        if (!entry.isIntersecting) prevTime.current = null;
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useAnimationFrame((time) => {
     if (reducedMotion) return;
+    if (!isVisibleRef.current) return;
+    if (isMobile && (frameCount.current++ & 1)) return;
 
     const t = time / 1000;
     if (prevTime.current === null) prevTime.current = t;
@@ -173,10 +191,24 @@ export function Footer() {
     let lastScrollY = window.scrollY;
     let lastScrollTime = performance.now();
     let scrollTimeout;
+    let pendingSpeed = null;
+    let rafId = 0;
+
+    const flush = () => {
+      rafId = 0;
+      if (pendingSpeed !== null) {
+        inputIntensity.set(pendingSpeed);
+        pendingSpeed = null;
+      }
+    };
+
+    const queueSpeed = (speed) => {
+      pendingSpeed = speed;
+      if (!rafId) rafId = requestAnimationFrame(flush);
+    };
 
     const onWheel = (e) => {
-      const speed = Math.min(Math.abs(e.deltaY) / 120, 1);
-      inputIntensity.set(speed);
+      queueSpeed(Math.min(Math.abs(e.deltaY) / 120, 1));
     };
 
     const onTouchStart = (e) => {
@@ -186,21 +218,17 @@ export function Footer() {
     const onTouchMove = (e) => {
       if (lastTouchY.current !== null) {
         const dy = Math.abs(e.touches[0].clientY - lastTouchY.current);
-        const speed = Math.min(dy / 25, 1);
-        inputIntensity.set(speed);
+        queueSpeed(Math.min(dy / 25, 1));
       }
       lastTouchY.current = e.touches[0].clientY;
     };
 
     const onTouchEnd = () => {
       lastTouchY.current = null;
-      // If page won't momentum-scroll (e.g. already at bottom),
-      // onScroll won't fire, so schedule a fallback decay
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => inputIntensity.set(0), 150);
     };
 
-    // Catches momentum scrolling after finger lifts
     const onScroll = () => {
       const now = performance.now();
       const dt = now - lastScrollTime;
@@ -208,10 +236,8 @@ export function Footer() {
       const dy = Math.abs(window.scrollY - lastScrollY);
       lastScrollY = window.scrollY;
 
-      // Velocity = px per 16ms frame, normalized
       const velocity = dt > 0 ? (dy / dt) * 16 : 0;
-      const speed = Math.min(velocity / 30, 1);
-      inputIntensity.set(speed);
+      queueSpeed(Math.min(velocity / 30, 1));
 
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => inputIntensity.set(0), 150);
@@ -220,7 +246,7 @@ export function Footer() {
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
@@ -230,6 +256,7 @@ export function Footer() {
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("scroll", onScroll);
       clearTimeout(scrollTimeout);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [inputIntensity]);
 

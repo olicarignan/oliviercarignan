@@ -23,11 +23,21 @@
     &::-webkit-scrollbar {
       display: none;
     }
+
+    &:focus {
+      outline: none;
+    }
   }
 
   .slider__item {
     flex-shrink: 0;
     scroll-snap-align: start;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 4px;
+      border-radius: 18px;
+    }
 
     @media (max-width: 699px) {
       scroll-snap-align: center;
@@ -98,6 +108,7 @@
 
     h3 {
       color: var(--text-color);
+      margin: 0;
     }
     p {
       color: var(--accent-color);

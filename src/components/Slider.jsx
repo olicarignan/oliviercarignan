@@ -37,6 +37,7 @@ export function Slider({ projects }) {
   const pendingLightbox = useRef(null);
   const externalScroll = useRef(false);
   const activeTransition = useRef(null);
+  const scrollRafTicking = useRef(false);
 
   useEffect(() => {
     const measure = () => {
@@ -66,9 +67,18 @@ export function Slider({ projects }) {
       }
     };
 
+    let resizeTimer;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measure, 100);
+    };
+
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      clearTimeout(resizeTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -109,7 +119,7 @@ export function Slider({ projects }) {
       const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
       const inner = item.querySelector(".slider__item-inner");
       if (inner) {
-        inner.style.transform = `scale(${1.05 - norm * 0.1})`;
+        inner.style.transform = `scale(${1 - norm * 0.05})`;
         inner.style.filter = `brightness(${1 - norm * 0.15})`;
       }
     });
@@ -125,11 +135,18 @@ export function Slider({ projects }) {
     if (externalScroll.current) return;
 
     if (layout.isMobile) {
-      const closest = updateMobileScales(track);
-      setActiveIndex(closest);
-      setIsScrolling(true);
-      clearTimeout(scrollTimer.current);
-      scrollTimer.current = setTimeout(() => setIsScrolling(false), 150);
+      if (scrollRafTicking.current) return;
+      scrollRafTicking.current = true;
+      requestAnimationFrame(() => {
+        scrollRafTicking.current = false;
+        const t = trackRef.current;
+        if (!t) return;
+        const closest = updateMobileScales(t);
+        setActiveIndex(closest);
+        setIsScrolling(true);
+        clearTimeout(scrollTimer.current);
+        scrollTimer.current = setTimeout(() => setIsScrolling(false), 150);
+      });
       return;
     }
 
@@ -439,6 +456,7 @@ export function Slider({ projects }) {
       <motion.div
         className="slider__track"
         ref={trackRef}
+        tabIndex={-1}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -458,10 +476,19 @@ export function Slider({ projects }) {
               key={project.id}
               className={`slider__item${i === activeIndex ? " slider__item--active" : ""}`}
               variants={itemFadeIn}
+              role="button"
+              tabIndex={0}
+              aria-label={project.title}
               style={{ width: `${layout.itemWidth}px`, cursor: "zoom-in" }}
               onClick={() => {
                 // Touch clicks (pointer capture doesn't apply to touch)
                 if (dragDistRef.current < 5) handleItemClick(i);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleItemClick(i);
+                }
               }}
             >
               <div className="slider__item-inner">

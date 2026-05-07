@@ -14,8 +14,8 @@ h3,
 h4,
 h5 {
   color: var(--accent-color);
+  margin-bottom: 0.5lh;
 }
-
 
 p {
   margin: 0;

@@ -4,6 +4,9 @@ const nextConfig = {
   reactStrictMode: true,
   turbopack: {},
   devIndicators: false,
+  experimental: {
+    optimizePackageImports: ["motion"],
+  },
 };
 
 export default nextConfig;

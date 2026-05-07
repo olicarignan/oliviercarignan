@@ -152,6 +152,10 @@
     }
   }
 
+  .thought-modal__title {
+    margin: 0;
+  }
+
   .thought-modal__body {
     overflow: hidden;
     grid-column: 1/-1;

@@ -3,26 +3,10 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("../../../public/fonts/MonumentGrotesk/ABCMonumentGroteskVariable.woff2")
-      format("woff2"),
-    url("../../../public/fonts/MonumentGrotesk/ABCMonumentGroteskVariable.woff")
-      format("woff"),
-    url("../../../public/fonts/MonumentGrotesk/ABCMonumentGroteskVariable.ttf")
-      format("truetype");
-}
-
-@font-face {
-  font-family: t;
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url("../../../public/fonts/TimesNow/JHA_Times_Now_SemiLight.woff2")
-      format("woff2"),
-    url("../../../public/fonts/TimesNow/JHA_Times_Now_SemiLight.woff")
-      format("woff");
+  src: url("/fonts/MonumentGrotesk/ABCMonumentGroteskVariable.woff2")
+    format("woff2");
 }
 
 :root {
   --font-sans: "m", Helvetica, sans-serif;
-  --font-serif: "t", "Times New Roman", Times, serif;
 }

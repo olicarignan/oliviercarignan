@@ -9,7 +9,7 @@
 
   .thoughts__title {
     color: var(--accent-color);
-    margin-bottom: 0.8rem;
+
   }
 
   .thoughts__track {
@@ -52,6 +52,12 @@
     border-radius: 12px;
     overflow: hidden;
     position: relative;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 4px;
+    }
 
     @media (min-width: 700px) {
       border-radius: 16px;
@@ -86,6 +92,7 @@
 
       h4 {
         color: #fff;
+        margin: 0;
       }
 
       span {

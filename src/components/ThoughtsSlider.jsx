@@ -80,9 +80,18 @@ export function ThoughtsSlider({ thoughts = [] }) {
       });
     };
 
+    let resizeTimer;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measure, 100);
+    };
+
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      clearTimeout(resizeTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -91,12 +100,18 @@ export function ThoughtsSlider({ thoughts = [] }) {
     track.scrollLeft = 0;
   }, [layout.inset]);
 
+  const scrollRafTicking = useRef(false);
   const handleScroll = useCallback(() => {
-    setIsScrolling(true);
-    clearTimeout(scrollTimer.current);
-    scrollTimer.current = setTimeout(() => {
-      setIsScrolling(false);
-    }, 150);
+    if (scrollRafTicking.current) return;
+    scrollRafTicking.current = true;
+    requestAnimationFrame(() => {
+      scrollRafTicking.current = false;
+      setIsScrolling(true);
+      clearTimeout(scrollTimer.current);
+      scrollTimer.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    });
   }, []);
 
   useEffect(() => {
@@ -225,21 +240,29 @@ export function ThoughtsSlider({ thoughts = [] }) {
                 style={{
                   width: `${layout.itemWidth}px`,
                 }}
-                onClick={() => handleCardClick(thought)}
               >
                 <div
                   className="thoughts__card"
-                  style={{ cursor: "pointer" }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={thought.title}
+                  onClick={() => handleCardClick(thought)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleCardClick(thought);
+                    }
+                  }}
                   onMouseMove={handleTiltMove}
                   onMouseLeave={handleTiltLeave}
                 >
                   {img && (
                     <picture>
-                      <source srcSet={img.webpSrcSet} sizes="(min-width: 700px) 50vw, 75vw" type="image/webp" />
+                      <source srcSet={img.webpSrcSet} sizes="(min-width: 700px) 300px, 75vw" type="image/webp" />
                       <img
                         src={img.src}
                         srcSet={img.srcSet}
-                        sizes="(min-width: 700px) 50vw, 75vw"
+                        sizes="(min-width: 700px) 300px, 75vw"
                         alt={img.alt || thought.title}
                         draggable={false}
                         loading={i <= 1 ? "eager" : "lazy"}
