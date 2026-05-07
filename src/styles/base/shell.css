@@ -30,6 +30,10 @@ body {
   box-sizing: border-box;
 }
 
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 *::selection {
   text-shadow: 0 0 0.75rem var(--text-color);
   color: transparent;
