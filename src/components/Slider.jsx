@@ -30,7 +30,7 @@ export function Slider({ projects }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [layout, setLayout] = useState({ inset: 0, itemWidth: 0, isMobile: false });
+  const [layout, setLayout] = useState({ inset: 0, itemWidth: 0, metaInset: 0, isMobile: false });
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [sliderVideosHidden, setSliderVideosHidden] = useState(false);
   const dragDistRef = useRef(0);
@@ -54,14 +54,16 @@ export function Slider({ projects }) {
         setLayout({
           inset: rect.left - 12,
           itemWidth: rect.width + 24,
+          metaInset: rect.left + colWidth + gap,
           isMobile: false,
         });
       } else {
-        const mobileItemWidth = window.innerWidth * 0.82;
+        const mobileItemWidth = rect.width + 24;
         const mobilePad = (window.innerWidth - mobileItemWidth) / 2;
         setLayout({
           inset: mobilePad,
           itemWidth: mobileItemWidth,
+          metaInset: mobilePad + 12,
           isMobile: true,
         });
       }
@@ -528,7 +530,7 @@ export function Slider({ projects }) {
       </motion.div>
       <motion.div
         className="slider__meta"
-        style={{ paddingLeft: `${layout.inset + 12}px` }}
+        style={{ paddingLeft: `${layout.metaInset}px` }}
         variants={itemFadeIn}
         onAnimationComplete={() => setHasLoaded(true)}
       >
