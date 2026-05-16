@@ -57,6 +57,11 @@
       margin-left: 0;
       opacity: 1;
     }
+
+    &.copied-out .icon-link__icon {
+      margin-left: -2rem;
+      opacity: 0;
+    }
   }
 
   @media not all and (hover: hover) {
@@ -79,10 +84,5 @@
   &.copied .icon--check {
     transform: scale(1) rotate(0deg);
     opacity: 1;
-  }
-
-  &.copied-out .icon-link__icon {
-    margin-left: -2rem;
-    opacity: 0;
   }
 }
