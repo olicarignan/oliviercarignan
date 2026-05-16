@@ -52,9 +52,11 @@
     opacity: 0;
   }
 
-  &:hover .icon-link__icon {
-    margin-left: 0;
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .icon-link__icon {
+      margin-left: 0;
+      opacity: 1;
+    }
   }
 
   &.copied .icon-link__icon {
