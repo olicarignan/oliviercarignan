@@ -59,6 +59,13 @@
     }
   }
 
+  @media not all and (hover: hover) {
+    .icon-link__icon {
+      margin-left: 0;
+      opacity: 1;
+    }
+  }
+
   &.copied .icon-link__icon {
     margin-left: 0;
     opacity: 1;
