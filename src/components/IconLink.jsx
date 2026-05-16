@@ -52,8 +52,10 @@ export const IconLink = ({ href, children, isExternal, isInternal, icon }) => {
       className={`icon-link${copyState !== "idle" ? ` ${copyState}` : ""}`}
       onClick={() => copyTextToClipboard(href)}
     >
-      <span className="icon-link__icon icon--copy"><CopyIcon/></span>
-      <span className="icon-link__icon icon--check"><CheckIcon/></span>
+      <span className="icon-link__icon">
+        <span className="icon--copy"><CopyIcon/></span>
+        <span className="icon--check"><CheckIcon/></span>
+      </span>
       <span className="icon-link__text">{children}</span>
     </button>
   );
