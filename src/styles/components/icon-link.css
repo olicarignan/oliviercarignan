@@ -62,6 +62,18 @@
       margin-left: -2rem;
       opacity: 0;
     }
+
+    &.copied-out .icon--copy {
+      transform: scale(0) rotate(45deg);
+      opacity: 0;
+      transition: none;
+    }
+
+    &.copied-out .icon--check {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+      transition: none;
+    }
   }
 
   @media not all and (hover: hover) {
