@@ -103,7 +103,9 @@ function Shape({ speedMultiplier }) {
       momentum.current *= 0.97;
     }
 
-    const targetTilt = Math.max(speed * 0.3, tiltIntensity.current);
+    const targetTilt = isDragging.current
+      ? tiltIntensity.current
+      : Math.max(speed * 0.3, tiltIntensity.current);
     groupRef.current.rotation.x = THREE.MathUtils.lerp(
       groupRef.current.rotation.x,
       targetTilt,
