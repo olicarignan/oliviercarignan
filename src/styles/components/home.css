@@ -2,7 +2,7 @@
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: subgrid;
-  padding-bottom: 40dvh;
+  padding-bottom: 6rem;
   position: relative;
   z-index: 1;
 
@@ -29,7 +29,7 @@
   }
 
   @media (min-width: 700px) {
-    padding-bottom: 40dvh;
+    padding-bottom: 6rem;
 
     p,
     .clients,
