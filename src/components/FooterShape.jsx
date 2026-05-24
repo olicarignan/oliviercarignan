@@ -102,12 +102,12 @@ function Shape({ speedMultiplier }) {
     <group ref={groupRef}>
       <mesh geometry={geometry} scale={[0.3, -0.3, 0.3]}>
         <meshPhysicalMaterial
-          color="#000000"
+          color="#111111"
           metalness={1}
-          roughness={0.05}
+          roughness={0.35}
           iridescence={1}
-          iridescenceIOR={2.0}
-          iridescenceThicknessRange={[100, 1200]}
+          iridescenceIOR={2.5}
+          iridescenceThicknessRange={[200, 800]}
         />
       </mesh>
       <mesh
