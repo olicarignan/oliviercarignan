@@ -7,6 +7,7 @@ import {
   useScroll,
   useMotionTemplate,
 } from "motion/react";
+import { FooterShape } from "./FooterShape";
 
 export function Footer() {
   const footerRef = useRef(null);
@@ -104,6 +105,7 @@ export function Footer() {
 
   return (
     <motion.footer className="footer" ref={footerRef} style={{ height }}>
+      <FooterShape speedMultiplier={smoothSpeed} />
     </motion.footer>
   );
 }
