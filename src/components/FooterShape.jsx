@@ -155,7 +155,7 @@ export function FooterShape({ speedMultiplier, inputIntensity }) {
       <SceneSetup />
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={2} color="#ffffff" />
-      <directionalLight position={[-5, 3, -3]} intensity={1.5} color="#ff44aa" />
+      <directionalLight position={[-5, 3, -3]} intensity={0.8} color="#ffbbcc" />
       <directionalLight position={[3, -5, 2]} intensity={1.5} color="#44aaff" />
       <Shape speedMultiplier={speedMultiplier} inputIntensity={inputIntensity} />
     </Canvas>
