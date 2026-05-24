@@ -18,11 +18,11 @@ function Shape({ speedMultiplier }) {
     const shapes = data.paths.flatMap((path) => SVGLoader.createShapes(path));
 
     const geo = new THREE.ExtrudeGeometry(shapes, {
-      depth: 1.5,
+      depth: 2,
       bevelEnabled: true,
-      bevelThickness: 0.25,
-      bevelSize: 0.25,
-      bevelSegments: 10,
+      bevelThickness: 1,
+      bevelSize: 0.5,
+      bevelSegments: 16,
     });
 
     geo.computeBoundingBox();
@@ -36,7 +36,7 @@ function Shape({ speedMultiplier }) {
   useFrame((_, delta) => {
     if (!meshRef.current) return;
     const speed = speedMultiplier.get();
-    meshRef.current.rotation.y += delta * (0.4 + speed * 3);
+    meshRef.current.rotation.y += delta * speed * 6;
     meshRef.current.rotation.x = THREE.MathUtils.lerp(
       meshRef.current.rotation.x,
       speed * 0.3,
@@ -45,7 +45,7 @@ function Shape({ speedMultiplier }) {
   });
 
   return (
-    <mesh ref={meshRef} geometry={geometry} scale={[1, -1, 1]}>
+    <mesh ref={meshRef} geometry={geometry} scale={[0.6, -0.6, 0.6]}>
       <meshStandardMaterial color="white" metalness={0.2} roughness={0.35} />
     </mesh>
   );

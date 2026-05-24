@@ -1,16 +1,8 @@
 import { useRef, useEffect } from "react";
-import {
-  motion,
-  useSpring,
-  useMotionValue,
-  useTransform,
-  useScroll,
-  useMotionTemplate,
-} from "motion/react";
+import { useSpring, useMotionValue } from "motion/react";
 import { FooterShape } from "./FooterShape";
 
 export function Footer() {
-  const footerRef = useRef(null);
   const lastTouchY = useRef(null);
 
   const inputIntensity = useMotionValue(0);
@@ -19,16 +11,6 @@ export function Footer() {
     stiffness: 25,
     damping: 20,
   });
-
-  const smoothOpacity = useSpring(
-    useTransform(inputIntensity, [0, 1], [0, 0.4]),
-    { stiffness: 20, damping: 22 }
-  );
-
-  const { scrollYProgress } = useScroll();
-  const heightValue = useTransform(scrollYProgress, [0.5, 1], [25, 100]);
-  const smoothHeight = useSpring(heightValue, { stiffness: 60, damping: 20 });
-  const height = useMotionTemplate`${smoothHeight}dvh`;
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -104,8 +86,8 @@ export function Footer() {
   }, [inputIntensity]);
 
   return (
-    <motion.footer className="footer" ref={footerRef} style={{ height }}>
+    <footer className="footer">
       <FooterShape speedMultiplier={smoothSpeed} />
-    </motion.footer>
+    </footer>
   );
 }
