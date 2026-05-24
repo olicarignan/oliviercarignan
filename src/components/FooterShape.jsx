@@ -29,15 +29,7 @@ function Shape({ speedMultiplier }) {
   const isDragging = useRef(false);
   const prevClientX = useRef(0);
   const momentum = useRef(0);
-  const { gl } = useThree();
-
   useEffect(() => {
-    const onPointerDown = (e) => {
-      isDragging.current = true;
-      prevClientX.current = e.clientX;
-      momentum.current = 0;
-    };
-
     const onPointerMove = (e) => {
       if (!isDragging.current) return;
       const dx = e.clientX - prevClientX.current;
@@ -50,15 +42,13 @@ function Shape({ speedMultiplier }) {
       isDragging.current = false;
     };
 
-    gl.domElement.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
     return () => {
-      gl.domElement.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
     };
-  }, [gl]);
+  }, []);
 
   const geometry = useMemo(() => {
     const loader = new SVGLoader();
@@ -84,6 +74,7 @@ function Shape({ speedMultiplier }) {
     return geo;
   }, []);
 
+  const hitGeometry = useMemo(() => new THREE.SphereGeometry(6, 32, 32), []);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -118,6 +109,17 @@ function Shape({ speedMultiplier }) {
           iridescenceIOR={2.0}
           iridescenceThicknessRange={[100, 1200]}
         />
+      </mesh>
+      <mesh
+        geometry={hitGeometry}
+        scale={[0.3, 0.3, 0.3]}
+        onPointerDown={(e) => {
+          isDragging.current = true;
+          prevClientX.current = e.clientX;
+          momentum.current = 0;
+        }}
+      >
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>
   );
