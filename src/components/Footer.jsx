@@ -87,7 +87,7 @@ export function Footer() {
 
   return (
     <footer className="footer">
-      <FooterShape speedMultiplier={smoothSpeed} />
+      <FooterShape speedMultiplier={smoothSpeed} inputIntensity={inputIntensity} />
     </footer>
   );
 }

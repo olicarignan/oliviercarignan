@@ -24,7 +24,7 @@ function SceneSetup() {
   return null;
 }
 
-function Shape({ speedMultiplier }) {
+function Shape({ speedMultiplier, inputIntensity }) {
   const groupRef = useRef();
   const isDragging = useRef(false);
   const prevClientX = useRef(0);
@@ -135,6 +135,8 @@ function Shape({ speedMultiplier }) {
           isDragging.current = true;
           prevClientX.current = e.clientX;
           momentum.current = 0;
+          tiltIntensity.current = 0;
+          inputIntensity.set(0);
           document.body.style.cursor = "grabbing";
         }}
       >
@@ -144,7 +146,7 @@ function Shape({ speedMultiplier }) {
   );
 }
 
-export function FooterShape({ speedMultiplier }) {
+export function FooterShape({ speedMultiplier, inputIntensity }) {
   return (
     <Canvas
       camera={{ position: [0, 0, 14], fov: 50 }}
@@ -155,7 +157,7 @@ export function FooterShape({ speedMultiplier }) {
       <directionalLight position={[5, 5, 5]} intensity={2} color="#ffffff" />
       <directionalLight position={[-5, 3, -3]} intensity={1.5} color="#ff44aa" />
       <directionalLight position={[3, -5, 2]} intensity={1.5} color="#44aaff" />
-      <Shape speedMultiplier={speedMultiplier} />
+      <Shape speedMultiplier={speedMultiplier} inputIntensity={inputIntensity} />
     </Canvas>
   );
 }
