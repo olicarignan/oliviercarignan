@@ -29,6 +29,8 @@ function Shape({ speedMultiplier }) {
   const isDragging = useRef(false);
   const prevClientX = useRef(0);
   const momentum = useRef(0);
+  const { gl } = useThree();
+
   useEffect(() => {
     const onPointerMove = (e) => {
       if (!isDragging.current) return;
@@ -44,13 +46,23 @@ function Shape({ speedMultiplier }) {
       document.body.style.cursor = "";
     };
 
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      const dx = -e.deltaX * 0.02;
+      momentum.current = dx;
+      if (groupRef.current) groupRef.current.rotation.y += dx;
+    };
+
     window.addEventListener("pointermove", onPointerMove, { passive: false });
     window.addEventListener("pointerup", onPointerUp);
+    gl.domElement.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      gl.domElement.removeEventListener("wheel", onWheel);
     };
-  }, []);
+  }, [gl]);
 
   const geometry = useMemo(() => {
     const loader = new SVGLoader();
