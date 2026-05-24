@@ -25,7 +25,7 @@ function SceneSetup() {
 }
 
 function Shape({ speedMultiplier }) {
-  const meshRef = useRef();
+  const groupRef = useRef();
   const isDragging = useRef(false);
   const prevClientX = useRef(0);
   const momentum = useRef(0);
@@ -36,7 +36,7 @@ function Shape({ speedMultiplier }) {
       const dx = e.clientX - prevClientX.current;
       prevClientX.current = e.clientX;
       momentum.current = dx * 0.01;
-      if (meshRef.current) meshRef.current.rotation.y += dx * 0.01;
+      if (groupRef.current) groupRef.current.rotation.y += dx * 0.01;
     };
 
     const onPointerUp = () => {
@@ -75,48 +75,57 @@ function Shape({ speedMultiplier }) {
     return geo;
   }, []);
 
+  const hitGeometry = useMemo(() => new THREE.CircleGeometry(6, 64), []);
+
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
+    if (!groupRef.current) return;
     const speed = speedMultiplier.get();
 
     if (isDragging.current) {
-      meshRef.current.rotation.x = THREE.MathUtils.lerp(
-        meshRef.current.rotation.x,
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
         0,
         0.1
       );
     } else {
-      meshRef.current.rotation.y += delta * speed * 12;
-      meshRef.current.rotation.y += momentum.current;
+      groupRef.current.rotation.y += delta * speed * 12;
+      groupRef.current.rotation.y += momentum.current;
       momentum.current *= 0.97;
-      meshRef.current.rotation.x = THREE.MathUtils.lerp(
-        meshRef.current.rotation.x,
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
         speed * 0.3,
         0.05
       );
     }
   });
 
+  const onPointerDown = (e) => {
+    isDragging.current = true;
+    prevClientX.current = e.clientX;
+    momentum.current = 0;
+  };
+
   return (
-    <mesh
-      ref={meshRef}
-      geometry={geometry}
-      scale={[0.3, -0.3, 0.3]}
-      onPointerDown={(e) => {
-        isDragging.current = true;
-        prevClientX.current = e.clientX;
-        momentum.current = 0;
-      }}
-    >
-      <meshPhysicalMaterial
-        color="#000000"
-        metalness={1}
-        roughness={0.05}
-        iridescence={1}
-        iridescenceIOR={2.0}
-        iridescenceThicknessRange={[100, 1200]}
-      />
-    </mesh>
+    <group ref={groupRef}>
+      <mesh geometry={geometry} scale={[0.3, -0.3, 0.3]}>
+        <meshPhysicalMaterial
+          color="#000000"
+          metalness={1}
+          roughness={0.05}
+          iridescence={1}
+          iridescenceIOR={2.0}
+          iridescenceThicknessRange={[100, 1200]}
+        />
+      </mesh>
+      <mesh
+        geometry={hitGeometry}
+        scale={[0.3, 0.3, 0.3]}
+        position={[0, 0, 0.4]}
+        onPointerDown={onPointerDown}
+      >
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+    </group>
   );
 }
 
