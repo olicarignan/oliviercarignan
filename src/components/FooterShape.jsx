@@ -41,6 +41,7 @@ function Shape({ speedMultiplier }) {
 
     const onPointerUp = () => {
       isDragging.current = false;
+      document.body.style.cursor = "";
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: false });
@@ -88,7 +89,7 @@ function Shape({ speedMultiplier }) {
         0.1
       );
     } else {
-      groupRef.current.rotation.y += delta * speed * 12;
+      groupRef.current.rotation.y += delta * speed * 20;
       groupRef.current.rotation.y += momentum.current;
       momentum.current *= 0.97;
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
@@ -114,10 +115,13 @@ function Shape({ speedMultiplier }) {
       <mesh
         geometry={hitGeometry}
         scale={[0.3, 0.3, 0.3]}
+        onPointerEnter={() => { document.body.style.cursor = "grab"; }}
+        onPointerLeave={() => { if (!isDragging.current) document.body.style.cursor = ""; }}
         onPointerDown={(e) => {
           isDragging.current = true;
           prevClientX.current = e.clientX;
           momentum.current = 0;
+          document.body.style.cursor = "grabbing";
         }}
       >
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
