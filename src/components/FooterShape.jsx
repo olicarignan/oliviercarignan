@@ -26,6 +26,30 @@ function SceneSetup() {
 
 function Shape({ speedMultiplier }) {
   const meshRef = useRef();
+  const isDragging = useRef(false);
+  const prevClientX = useRef(0);
+  const momentum = useRef(0);
+
+  useEffect(() => {
+    const onPointerMove = (e) => {
+      if (!isDragging.current) return;
+      const dx = e.clientX - prevClientX.current;
+      prevClientX.current = e.clientX;
+      momentum.current = dx * 0.01;
+      if (meshRef.current) meshRef.current.rotation.y += dx * 0.01;
+    };
+
+    const onPointerUp = () => {
+      isDragging.current = false;
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+  }, []);
 
   const geometry = useMemo(() => {
     const loader = new SVGLoader();
@@ -54,16 +78,36 @@ function Shape({ speedMultiplier }) {
   useFrame((_, delta) => {
     if (!meshRef.current) return;
     const speed = speedMultiplier.get();
-    meshRef.current.rotation.y += delta * speed * 12;
-    meshRef.current.rotation.x = THREE.MathUtils.lerp(
-      meshRef.current.rotation.x,
-      speed * 0.3,
-      0.05
-    );
+
+    if (isDragging.current) {
+      meshRef.current.rotation.x = THREE.MathUtils.lerp(
+        meshRef.current.rotation.x,
+        0,
+        0.1
+      );
+    } else {
+      meshRef.current.rotation.y += delta * speed * 12;
+      meshRef.current.rotation.y += momentum.current;
+      momentum.current *= 0.92;
+      meshRef.current.rotation.x = THREE.MathUtils.lerp(
+        meshRef.current.rotation.x,
+        speed * 0.3,
+        0.05
+      );
+    }
   });
 
   return (
-    <mesh ref={meshRef} geometry={geometry} scale={[0.6, -0.6, 0.6]}>
+    <mesh
+      ref={meshRef}
+      geometry={geometry}
+      scale={[0.6, -0.6, 0.6]}
+      onPointerDown={(e) => {
+        isDragging.current = true;
+        prevClientX.current = e.clientX;
+        momentum.current = 0;
+      }}
+    >
       <meshPhysicalMaterial
         color="#000000"
         metalness={1}
