@@ -101,7 +101,7 @@ function Shape({ speedMultiplier }) {
     <mesh
       ref={meshRef}
       geometry={geometry}
-      scale={[0.6, -0.6, 0.6]}
+      scale={[0.3, -0.3, 0.3]}
       onPointerDown={(e) => {
         isDragging.current = true;
         prevClientX.current = e.clientX;
