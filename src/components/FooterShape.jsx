@@ -105,7 +105,7 @@ function Shape({ speedMultiplier }) {
           color="#c0c0c0"
           metalness={1}
           roughness={0.275}
-          iridescence={0.4}
+          iridescence={0.25}
           iridescenceIOR={1.5}
           iridescenceThicknessRange={[300, 600]}
         />
