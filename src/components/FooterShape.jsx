@@ -32,17 +32,18 @@ function Shape({ speedMultiplier }) {
   useEffect(() => {
     const onPointerMove = (e) => {
       if (!isDragging.current) return;
+      e.preventDefault();
       const dx = e.clientX - prevClientX.current;
       prevClientX.current = e.clientX;
-      momentum.current = dx * 0.01;
-      if (groupRef.current) groupRef.current.rotation.y += dx * 0.01;
+      momentum.current = dx * 0.02;
+      if (groupRef.current) groupRef.current.rotation.y += dx * 0.02;
     };
 
     const onPointerUp = () => {
       isDragging.current = false;
     };
 
-    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointermove", onPointerMove, { passive: false });
     window.addEventListener("pointerup", onPointerUp);
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
