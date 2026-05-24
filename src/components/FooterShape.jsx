@@ -94,21 +94,10 @@ function Shape({ speedMultiplier }) {
     if (!groupRef.current) return;
     const speed = speedMultiplier.get();
 
-    if (isDragging.current) {
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
-        0,
-        0.1
-      );
-    } else {
+    if (!isDragging.current) {
       groupRef.current.rotation.y += delta * speed * 20;
       groupRef.current.rotation.y += momentum.current;
       momentum.current *= 0.97;
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
-        speed * 0.3,
-        0.05
-      );
     }
   });
 
