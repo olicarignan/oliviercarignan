@@ -104,10 +104,10 @@ function Shape({ speedMultiplier }) {
         <meshPhysicalMaterial
           color="#111111"
           metalness={1}
-          roughness={0.35}
+          roughness={0.275}
           iridescence={1}
-          iridescenceIOR={2.5}
-          iridescenceThicknessRange={[200, 800]}
+          iridescenceIOR={1.5}
+          iridescenceThicknessRange={[300, 600]}
         />
       </mesh>
       <mesh
