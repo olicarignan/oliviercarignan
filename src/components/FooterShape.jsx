@@ -88,7 +88,7 @@ function Shape({ speedMultiplier }) {
     } else {
       meshRef.current.rotation.y += delta * speed * 12;
       meshRef.current.rotation.y += momentum.current;
-      momentum.current *= 0.92;
+      momentum.current *= 0.97;
       meshRef.current.rotation.x = THREE.MathUtils.lerp(
         meshRef.current.rotation.x,
         speed * 0.3,
