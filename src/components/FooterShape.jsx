@@ -29,6 +29,7 @@ function Shape({ speedMultiplier }) {
   const isDragging = useRef(false);
   const prevClientX = useRef(0);
   const momentum = useRef(0);
+  const tiltIntensity = useRef(0);
   const { gl } = useThree();
 
   useEffect(() => {
@@ -38,6 +39,7 @@ function Shape({ speedMultiplier }) {
       const dx = e.clientX - prevClientX.current;
       prevClientX.current = e.clientX;
       momentum.current = dx * 0.02;
+      tiltIntensity.current = Math.min(0.3, Math.abs(dx) * 0.015);
       if (groupRef.current) groupRef.current.rotation.y += dx * 0.02;
     };
 
@@ -51,6 +53,7 @@ function Shape({ speedMultiplier }) {
       e.preventDefault();
       const dx = -e.deltaX * 0.02;
       momentum.current = dx;
+      tiltIntensity.current = Math.min(0.3, Math.abs(e.deltaX) * 0.003);
       if (groupRef.current) groupRef.current.rotation.y += dx;
     };
 
@@ -99,6 +102,14 @@ function Shape({ speedMultiplier }) {
       groupRef.current.rotation.y += momentum.current;
       momentum.current *= 0.97;
     }
+
+    const targetTilt = Math.max(speed * 0.3, tiltIntensity.current);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(
+      groupRef.current.rotation.x,
+      targetTilt,
+      0.05
+    );
+    tiltIntensity.current *= 0.92;
   });
 
   return (
