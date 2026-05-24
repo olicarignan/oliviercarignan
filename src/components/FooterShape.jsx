@@ -36,7 +36,7 @@ function Shape({ speedMultiplier }) {
   useFrame((_, delta) => {
     if (!meshRef.current) return;
     const speed = speedMultiplier.get();
-    meshRef.current.rotation.y += delta * speed * 6;
+    meshRef.current.rotation.y += delta * speed * 12;
     meshRef.current.rotation.x = THREE.MathUtils.lerp(
       meshRef.current.rotation.x,
       speed * 0.3,
