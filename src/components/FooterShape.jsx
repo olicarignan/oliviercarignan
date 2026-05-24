@@ -39,7 +39,7 @@ function Shape({ speedMultiplier }) {
       depth: 2,
       bevelEnabled: true,
       bevelThickness: 0.9,
-      bevelSize: 0,
+      bevelSize: 0.15,
       bevelSegments: 16,
     });
 
