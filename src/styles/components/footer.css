@@ -14,5 +14,5 @@
   width: 100% !important;
   height: 100% !important;
   pointer-events: auto !important;
-  touch-action: none;
+  touch-action: pan-y;
 }
