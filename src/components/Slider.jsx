@@ -543,8 +543,22 @@ export function Slider({ projects }) {
             transition: "opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease",
           }}
         >
-          <h3>{active?.title}</h3>
-          <p>{active?.typeYear}</p>
+          <motion.h3
+            key={`title-${activeIndex}`}
+            initial={hasLoaded ? { opacity: 0, y: 8, filter: "blur(4px)" } : false}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1] }}
+          >
+            {active?.title}
+          </motion.h3>
+          <motion.p
+            key={`type-${activeIndex}`}
+            initial={hasLoaded ? { opacity: 0, y: 8, filter: "blur(4px)" } : false}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1], delay: 0.08 }}
+          >
+            {active?.typeYear}
+          </motion.p>
         </div>
       </motion.div>
       <AnimatePresence>
