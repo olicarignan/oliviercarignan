@@ -58,7 +58,7 @@ export const IconLink = ({ href, children, isExternal, isInternal, icon }) => {
         <span className="icon--check"><CheckIcon/></span>
       </span>
       <span className="icon-link__text">
-        <TextMorph as="span">{copyState !== "idle" ? "Copied" : children}</TextMorph>
+        <TextMorph as="span">{copyState === "copied" ? "Copied" : children}</TextMorph>
       </span>
     </button>
   );
