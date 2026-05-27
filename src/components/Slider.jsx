@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { flushSync } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { TextMorph } from "torph/react";
 import { Lightbox } from "./Lightbox";
 const staggerItems = {
   initial: {},
@@ -22,28 +23,11 @@ const itemFadeIn = {
   },
 };
 
-const metaStagger = {
-  initial: {},
-  animate: {
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const metaItemMorph = {
-  initial: { opacity: 0, filter: "blur(4px)" },
-  animate: {
-    opacity: 1,
-    filter: "blur(0px)",
-    transition: { duration: 0.6, ease: [0, 0.55, 0.45, 1] },
-  },
-};
-
 export function Slider({ projects }) {
   const trackRef = useRef(null);
   const scrollTimer = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hasLoaded, setHasLoaded] = useState(false);
   const [layout, setLayout] = useState({ inset: 0, itemWidth: 0, metaInset: 0, isMobile: false });
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [sliderVideosHidden, setSliderVideosHidden] = useState(false);
@@ -539,21 +523,10 @@ export function Slider({ projects }) {
         className="slider__meta"
         style={{ paddingLeft: `${layout.metaInset}px` }}
         variants={itemFadeIn}
-        onAnimationComplete={() => setHasLoaded(true)}
       >
         <div className="slider__meta-inner">
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={activeIndex}
-              initial={hasLoaded ? "initial" : false}
-              animate="animate"
-              exit={{ opacity: 0, filter: "blur(4px)", transition: { duration: 0.25, ease: [0.55, 0, 1, 0.45] } }}
-              variants={metaStagger}
-            >
-              <motion.h3 variants={metaItemMorph}>{active?.title}</motion.h3>
-              <motion.p variants={metaItemMorph}>{active?.typeYear}</motion.p>
-            </motion.div>
-          </AnimatePresence>
+          <TextMorph as="h3">{active?.title}</TextMorph>
+          <TextMorph as="p">{active?.typeYear}</TextMorph>
         </div>
       </motion.div>
       <AnimatePresence>
