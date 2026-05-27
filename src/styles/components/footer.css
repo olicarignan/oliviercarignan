@@ -3,9 +3,17 @@
   grid-column: 1 / -1;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: 50vh;
-  overflow: hidden;
+  /* Tall scroll region: the name rests as the default state, then extra
+     scroll past the trigger commits (one-way) to the shape. */
+  height: 200vh;
   pointer-events: none;
+}
+
+.footer__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .footer__canvas {
@@ -15,4 +23,56 @@
   height: 100% !important;
   pointer-events: auto !important;
   touch-action: pan-y;
+}
+
+.footer__name {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Solid fill so the always-on 3D canvas stays hidden behind the name until
+     the handoff fade reveals it. Matches the page background for a seamless
+     crossfade from the flat morphed © to the metallic 3D ©. */
+  background: var(--background-color, #fff);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 9vw, 12rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-color, #131718);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.footer__name-letter,
+.footer__name-glyph,
+.footer__name-space {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* The O and C are SVGs (so they can morph), sized to sit on the text baseline
+   and match the surrounding cap height so they read as ordinary letters. */
+.footer__name-glyph {
+  position: relative;
+  width: 0.72em;
+  height: 0.72em;
+  vertical-align: baseline;
+}
+
+.footer__name-glyph-svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.82em;
+  height: 0.82em;
+  transform: translate(-50%, -50%);
+  fill: currentColor;
+  overflow: visible;
+}
+
+.footer__name-space {
+  width: 0.22em;
 }
