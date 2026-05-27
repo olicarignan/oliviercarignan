@@ -526,6 +526,7 @@ export function Slider({ projects }) {
       >
         <div className="slider__meta-inner">
           <TextMorph as="h3">{active?.title}</TextMorph>
+          <br />
           <TextMorph as="p">{active?.typeYear}</TextMorph>
         </div>
       </motion.div>
