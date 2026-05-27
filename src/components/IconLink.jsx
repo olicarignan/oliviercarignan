@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import { TextMorph } from "torph/react";
 
 import { ArrowIcon } from "@/components/ArrowIcon";
 import { CopyIcon } from "@/components/CopyIcon";
@@ -56,7 +57,9 @@ export const IconLink = ({ href, children, isExternal, isInternal, icon }) => {
         <span className="icon--copy"><CopyIcon/></span>
         <span className="icon--check"><CheckIcon/></span>
       </span>
-      <span className="icon-link__text">{children}</span>
+      <span className="icon-link__text">
+        <TextMorph as="span">{copyState === "copied" ? "Copied" : children}</TextMorph>
+      </span>
     </button>
   );
 };
