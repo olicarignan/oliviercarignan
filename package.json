@@ -24,5 +24,12 @@
     "@eslint/eslintrc": "^3",
     "eslint": "^9",
     "eslint-config-next": "15.3.4"
-  }
+  },
+  "browserslist": [
+    "Chrome >= 92",
+    "Edge >= 92",
+    "Firefox >= 90",
+    "Safari >= 15.4",
+    "iOS >= 15.4"
+  ]
 }

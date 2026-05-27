@@ -45,7 +45,7 @@ export const getHome = `
       value
       }
       featuredImage {
-      responsiveImage(imgixParams: { auto: [format, compress], q: 75, w: 600, h: 750, fit: crop }) {
+      responsiveImage(imgixParams: { auto: [format, compress], q: 60, w: 600, h: 750, fit: crop }) {
           srcSet
           webpSrcSet
           sizes
