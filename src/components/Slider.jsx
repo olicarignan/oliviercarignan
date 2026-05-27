@@ -43,8 +43,6 @@ export function Slider({ projects }) {
   const scrollTimer = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [layout, setLayout] = useState({ inset: 0, itemWidth: 0, metaInset: 0, isMobile: false });
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -161,14 +159,11 @@ export function Slider({ projects }) {
         if (!t) return;
         const closest = updateMobileScales(t);
         setActiveIndex(closest);
-        setIsScrolling(true);
         clearTimeout(scrollTimer.current);
-        scrollTimer.current = setTimeout(() => setIsScrolling(false), 150);
       });
       return;
     }
 
-    setIsScrolling(true);
     clearTimeout(scrollTimer.current);
 
     scrollTimer.current = setTimeout(() => {
@@ -187,7 +182,6 @@ export function Slider({ projects }) {
       });
 
       setActiveIndex(closest);
-      setIsScrolling(false);
     }, 150);
   }, [layout.inset, layout.isMobile, updateMobileScales]);
 
@@ -265,7 +259,6 @@ export function Slider({ projects }) {
       prevTime: Date.now(),
       velocity: 0,
     };
-    setIsDragging(true);
     track.style.scrollSnapType = "none";
     track.setPointerCapture(e.pointerId);
   }, []);
@@ -295,7 +288,6 @@ export function Slider({ projects }) {
     // If barely moved, treat as click
     if (dragDistRef.current < 5) {
       track.style.scrollSnapType = "x mandatory";
-      setIsDragging(false);
       const el = document.elementFromPoint(e.clientX, e.clientY)?.closest(".slider__item");
       if (el) {
         const items = Array.from(track.querySelectorAll(".slider__item"));
@@ -334,7 +326,6 @@ export function Slider({ projects }) {
         const onScrollEnd = () => {
           clearTimeout(fallback);
           track.style.scrollSnapType = "x mandatory";
-          setIsDragging(false);
           track.removeEventListener("scrollend", onScrollEnd);
         };
         const fallback = setTimeout(onScrollEnd, 300);
@@ -550,15 +541,7 @@ export function Slider({ projects }) {
         variants={itemFadeIn}
         onAnimationComplete={() => setHasLoaded(true)}
       >
-        <div
-          className="slider__meta-inner"
-          style={{
-            opacity: hasLoaded && (isScrolling || isDragging) ? 0 : 1,
-            filter: hasLoaded && (isScrolling || isDragging) ? "blur(4px)" : "blur(0px)",
-            transform: hasLoaded && (isScrolling || isDragging) ? "translateY(8px)" : "translateY(0)",
-            transition: "opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease",
-          }}
-        >
+        <div className="slider__meta-inner">
           <AnimatePresence mode="popLayout">
             <motion.div
               key={activeIndex}
