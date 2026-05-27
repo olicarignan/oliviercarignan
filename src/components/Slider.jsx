@@ -22,6 +22,22 @@ const itemFadeIn = {
   },
 };
 
+const metaStagger = {
+  initial: {},
+  animate: {
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const metaItemMorph = {
+  initial: { opacity: 0, filter: "blur(4px)" },
+  animate: {
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.6, ease: [0, 0.55, 0.45, 1] },
+  },
+};
+
 export function Slider({ projects }) {
   const trackRef = useRef(null);
   const scrollTimer = useRef(null);
@@ -543,22 +559,18 @@ export function Slider({ projects }) {
             transition: "opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease",
           }}
         >
-          <motion.h3
-            key={`title-${activeIndex}`}
-            initial={hasLoaded ? { opacity: 0, y: 8, filter: "blur(4px)" } : false}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1] }}
-          >
-            {active?.title}
-          </motion.h3>
-          <motion.p
-            key={`type-${activeIndex}`}
-            initial={hasLoaded ? { opacity: 0, y: 8, filter: "blur(4px)" } : false}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1], delay: 0.08 }}
-          >
-            {active?.typeYear}
-          </motion.p>
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={activeIndex}
+              initial={hasLoaded ? "initial" : false}
+              animate="animate"
+              exit={{ opacity: 0, filter: "blur(4px)", transition: { duration: 0.25, ease: [0.55, 0, 1, 0.45] } }}
+              variants={metaStagger}
+            >
+              <motion.h3 variants={metaItemMorph}>{active?.title}</motion.h3>
+              <motion.p variants={metaItemMorph}>{active?.typeYear}</motion.p>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </motion.div>
       <AnimatePresence>
