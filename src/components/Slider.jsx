@@ -148,26 +148,34 @@ export function Slider({ projects }) {
       return;
     }
 
-    clearTimeout(scrollTimer.current);
+    // Desktop: activate the project as soon as it overlaps the active slot by >50%
+    if (scrollRafTicking.current) return;
+    scrollRafTicking.current = true;
+    requestAnimationFrame(() => {
+      scrollRafTicking.current = false;
+      const t = trackRef.current;
+      if (!t) return;
 
-    scrollTimer.current = setTimeout(() => {
-      const items = track.querySelectorAll(".slider__item");
-      const snapPoint = layout.inset;
+      const items = t.querySelectorAll(".slider__item");
+      const slotLeft = layout.inset;
+      const slotRight = layout.inset + layout.itemWidth;
 
-      let closest = 0;
-      let closestDist = Infinity;
-
+      let bestIndex = -1;
+      let bestOverlap = 0;
       items.forEach((item, i) => {
-        const dist = Math.abs(item.getBoundingClientRect().left - snapPoint);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closest = i;
+        const rect = item.getBoundingClientRect();
+        const overlap = Math.max(0, Math.min(rect.right, slotRight) - Math.max(rect.left, slotLeft));
+        if (overlap > bestOverlap) {
+          bestOverlap = overlap;
+          bestIndex = i;
         }
       });
 
-      setActiveIndex(closest);
-    }, 150);
-  }, [layout.inset, layout.isMobile, updateMobileScales]);
+      if (bestIndex >= 0 && bestOverlap / layout.itemWidth > 0.5) {
+        setActiveIndex(bestIndex);
+      }
+    });
+  }, [layout.inset, layout.itemWidth, layout.isMobile, updateMobileScales]);
 
   useEffect(() => {
     const track = trackRef.current;
