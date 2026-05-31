@@ -25,6 +25,14 @@
     padding-block: 48px;
     margin-block: -48px;
 
+    @media (hover: hover) and (pointer: fine) {
+      cursor: grab;
+
+      &.slider__track--dragging {
+        cursor: grabbing;
+      }
+    }
+
     &::-webkit-scrollbar {
       display: none;
     }
@@ -75,18 +83,10 @@
       }
     }
 
-    &.slider__item--transitioning .slider__item-inner {
-      filter: none;
-      transition: none;
-    }
-
     img,
     video {
       display: block;
       border-radius: 16px;
-      cursor:
-        url("/images/svg/cursor_plus.svg") 8 8,
-        zoom-in;
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;

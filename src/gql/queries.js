@@ -17,17 +17,6 @@ export const getHome = `
             base64
           }
         }
-        lightboxImage: featuredImage {
-          responsiveImage(imgixParams: { auto: [format, compress], q: 80, w: 1600, h: 1067, fit: crop }) {
-            srcSet
-            webpSrcSet
-            sizes
-            src
-            width
-            height
-            alt
-          }
-        }
         video {
           url
         }

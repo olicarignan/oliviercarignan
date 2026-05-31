@@ -1,10 +1,8 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { flushSync } from "react-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { TextMorph } from "torph/react";
-import { Lightbox } from "./Lightbox";
 const staggerItems = {
   initial: {},
   animate: {
@@ -25,7 +23,6 @@ const itemFadeIn = {
 
 export function Slider({ projects }) {
   const trackRef = useRef(null);
-  const scrollTimer = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [layout, setLayout] = useState({
@@ -34,12 +31,7 @@ export function Slider({ projects }) {
     metaInset: 0,
     isMobile: false,
   });
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [sliderVideosHidden, setSliderVideosHidden] = useState(false);
   const dragDistRef = useRef(0);
-  const pendingLightbox = useRef(null);
-  const externalScroll = useRef(false);
-  const activeTransition = useRef(null);
   const scrollRafTicking = useRef(false);
 
   useEffect(() => {
@@ -145,9 +137,6 @@ export function Slider({ projects }) {
     const track = trackRef.current;
     if (!track) return;
 
-    // Skip detection when scroll was triggered by lightbox sync
-    if (externalScroll.current) return;
-
     if (layout.isMobile) {
       if (scrollRafTicking.current) return;
       scrollRafTicking.current = true;
@@ -157,7 +146,6 @@ export function Slider({ projects }) {
         if (!t) return;
         const closest = updateMobileScales(t);
         setActiveIndex(closest);
-        clearTimeout(scrollTimer.current);
       });
       return;
     }
@@ -215,46 +203,13 @@ export function Slider({ projects }) {
     }
   }, [layout.isMobile, updateMobileScales]);
 
-  const openLightbox = useCallback((index) => {
-    const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
-    if (!sliderItems?.[index]) return;
-    if (activeTransition.current) return;
-
-    if (document.startViewTransition) {
-      // Fade out shadow before snapshot
-      sliderItems[index].classList.add("slider__item--transitioning");
-
-      // Old snapshot: slider item has the name
-      sliderItems[index].style.viewTransitionName = "slider-active";
-      document.documentElement.style.viewTransitionName = "none";
-
-      const transition = document.startViewTransition(() => {
-        // Remove from slider item so lightbox active item (via CSS) becomes the new snapshot
-        sliderItems[index].style.viewTransitionName = "";
-        flushSync(() => setLightboxOpen(true));
-      });
-      activeTransition.current = transition;
-
-      transition.finished.then(() => {
-        activeTransition.current = null;
-        sliderItems[index].classList.remove("slider__item--transitioning");
-        document.documentElement.style.viewTransitionName = "";
-      });
-    } else {
-      setLightboxOpen(true);
-    }
-  }, []);
-
   const handleItemClick = useCallback(
     (index) => {
-      if (index === activeIndex) {
-        openLightbox(index);
-      } else {
-        pendingLightbox.current = index;
+      if (index !== activeIndex) {
         scrollToIndex(index);
       }
     },
-    [activeIndex, openLightbox, scrollToIndex],
+    [activeIndex, scrollToIndex],
   );
 
   const handlePointerDown = useCallback((e) => {
@@ -271,6 +226,7 @@ export function Slider({ projects }) {
       velocity: 0,
     };
     track.style.scrollSnapType = "none";
+    track.classList.add("slider__track--dragging");
     track.setPointerCapture(e.pointerId);
   }, []);
 
@@ -296,6 +252,7 @@ export function Slider({ projects }) {
       ds.isDragging = false;
       const track = trackRef.current;
       track.releasePointerCapture(e.pointerId);
+      track.classList.remove("slider__track--dragging");
 
       // If barely moved, treat as click
       if (dragDistRef.current < 5) {
@@ -359,16 +316,6 @@ export function Slider({ projects }) {
     [layout.inset, handleItemClick],
   );
 
-  // Hide slider videos after backdrop fades in, restore on close
-  useEffect(() => {
-    if (lightboxOpen) {
-      const timer = setTimeout(() => setSliderVideosHidden(true), 300);
-      return () => clearTimeout(timer);
-    } else {
-      setSliderVideosHidden(false);
-    }
-  }, [lightboxOpen]);
-
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -377,114 +324,23 @@ export function Slider({ projects }) {
     items.forEach((item, i) => {
       const video = item.querySelector("video");
       if (!video) return;
-      if (sliderVideosHidden) {
-        video.pause();
-        video.style.visibility = "hidden";
-        item.classList.remove("slider__item--video-ready");
-      } else {
-        video.style.visibility = "";
-        if (i === activeIndex) {
-          video.currentTime = 0;
-          video.play();
-          const onReady = () => item.classList.add("slider__item--video-ready");
-          if (video.readyState >= 2) {
-            onReady();
-          } else {
-            video.addEventListener("canplay", onReady, { once: true });
-            cleanups.push(() => video.removeEventListener("canplay", onReady));
-          }
+      if (i === activeIndex) {
+        video.currentTime = 0;
+        video.play();
+        const onReady = () => item.classList.add("slider__item--video-ready");
+        if (video.readyState >= 2) {
+          onReady();
         } else {
-          video.pause();
-          item.classList.remove("slider__item--video-ready");
+          video.addEventListener("canplay", onReady, { once: true });
+          cleanups.push(() => video.removeEventListener("canplay", onReady));
         }
+      } else {
+        video.pause();
+        item.classList.remove("slider__item--video-ready");
       }
     });
     return () => cleanups.forEach((fn) => fn());
-  }, [activeIndex, sliderVideosHidden]);
-
-  const closeLightbox = useCallback(() => {
-    if (activeTransition.current) return;
-    const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
-    if (!sliderItems?.[activeIndex]) {
-      setLightboxOpen(false);
-      return;
-    }
-
-    // Step 1: Fade out neighbors and backdrop
-    const lightboxEl = document.querySelector(".lightbox");
-    if (lightboxEl) lightboxEl.classList.add("lightbox--closing");
-
-    const runViewTransition = () => {
-      if (activeTransition.current) return;
-      if (document.startViewTransition) {
-        // Restore slider videos before snapshot so they appear in the capture
-        sliderItems.forEach((item) => {
-          const video = item.querySelector("video");
-          if (video) video.style.visibility = "";
-        });
-
-        // Old snapshot: lightbox active item has the name via CSS
-        document.documentElement.style.viewTransitionName = "none";
-
-        const transition = document.startViewTransition(() => {
-          // Remove name from lightbox item so it doesn't conflict
-          const lbActive = document.querySelector(".lightbox__item--active");
-          if (lbActive) lbActive.style.viewTransitionName = "none";
-
-          // Hide lightbox immediately so its exit animation doesn't interfere
-          const lightboxRoot = document.querySelector(".lightbox");
-          if (lightboxRoot) lightboxRoot.style.display = "none";
-
-          // New snapshot: slider item gets the name
-          sliderItems[activeIndex].style.viewTransitionName = "slider-active";
-          flushSync(() => setLightboxOpen(false));
-        });
-        activeTransition.current = transition;
-
-        transition.finished.then(() => {
-          activeTransition.current = null;
-          sliderItems[activeIndex].style.viewTransitionName = "";
-          document.documentElement.style.viewTransitionName = "";
-        });
-      } else {
-        setLightboxOpen(false);
-      }
-    };
-
-    // Step 2: Wait for fade-out to finish, then run view transition
-    if (lightboxEl) {
-      setTimeout(runViewTransition, 350);
-    } else {
-      runViewTransition();
-    }
   }, [activeIndex]);
-
-  // Open lightbox after pending scroll settles
-  useEffect(() => {
-    if (
-      pendingLightbox.current !== null &&
-      activeIndex === pendingLightbox.current
-    ) {
-      const idx = pendingLightbox.current;
-      pendingLightbox.current = null;
-      // Small delay to let scroll fully settle
-      requestAnimationFrame(() => openLightbox(idx));
-    }
-  }, [activeIndex, openLightbox]);
-
-  const handleLightboxActiveChange = useCallback(
-    (index) => {
-      setActiveIndex(index);
-      externalScroll.current = true;
-      scrollToIndex(index);
-      // Clear flag after scroll settles
-      clearTimeout(scrollTimer.current);
-      scrollTimer.current = setTimeout(() => {
-        externalScroll.current = false;
-      }, 300);
-    },
-    [scrollToIndex],
-  );
 
   const active = projects[activeIndex];
 
@@ -516,7 +372,7 @@ export function Slider({ projects }) {
               role="button"
               tabIndex={0}
               aria-label={project.title}
-              style={{ width: `${layout.itemWidth}px`, cursor: "zoom-in" }}
+              style={{ width: `${layout.itemWidth}px` }}
               onClick={() => {
                 // Touch clicks (pointer capture doesn't apply to touch)
                 if (dragDistRef.current < 5) handleItemClick(i);
@@ -585,16 +441,6 @@ export function Slider({ projects }) {
           <TextMorph as="p">{active?.typeYear}</TextMorph>
         </div>
       </motion.div>
-      <AnimatePresence>
-        {lightboxOpen && (
-          <Lightbox
-            projects={projects}
-            activeIndex={activeIndex}
-            onActiveIndexChange={handleLightboxActiveChange}
-            onClose={closeLightbox}
-          />
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
