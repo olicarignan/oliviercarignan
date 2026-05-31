@@ -15,8 +15,8 @@
   grid-auto-rows: min-content;
 
   @media (min-width: 700px) {
-    --columns: 6;
-    max-width: calc(604px + (var(--padding) * 2)  + (var(--gap) * 2));
+    --columns: 8;
+    max-width: calc(808px + (var(--padding) * 2) + (var(--gap) * 2));
   }
 
   .subgrid {

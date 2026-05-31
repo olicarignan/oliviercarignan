@@ -33,7 +33,7 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
           const edgeDist = Math.max(0, dist - halfItem);
           const norm = Math.min(edgeDist / (window.innerWidth * 0.3), 1);
           item.style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
-          item.style.transform = `scale(${1 - norm * 0.08})`;
+          item.style.transform = `scale(${1 - norm * 0.01})`;
         });
       }
     }, 500);
@@ -96,7 +96,7 @@ export function Lightbox({ projects, activeIndex: initialIndex, onActiveIndexCha
           const edgeDist = Math.max(0, dist - halfItem);
           const norm = Math.min(edgeDist / (vw * 0.3), 1);
           items[i].style.filter = `blur(0px) brightness(${1 - norm * 0.4})`;
-          items[i].style.transform = `scale(${1 - norm * 0.08})`;
+          items[i].style.transform = `scale(${1 - norm * 0.01})`;
         }
       }
 

@@ -13,6 +13,11 @@
     display: flex;
     gap: var(--gap);
     overflow-x: auto;
+
+    @media (max-width: 699px) {
+      gap: 0;
+    }
+
     overflow-y: clip;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -107,15 +112,15 @@
     margin-top: 0.75lh;
 
     h3 {
-      color: var(--text-color);
+      color: var(--accent-color);
       margin: 0;
     }
     p {
-      color: var(--accent-color);
+      color: var(--text-color);
     }
   }
 
   @media (min-width: 700px) {
-    margin-block: 12rem;
+    margin-block: 10rem;
   }
 }

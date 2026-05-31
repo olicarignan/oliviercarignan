@@ -9,7 +9,6 @@
 
   .thoughts__title {
     color: var(--accent-color);
-
   }
 
   .thoughts__track {
@@ -145,6 +144,6 @@
   }
 
   @media (min-width: 700px) {
-    margin-bottom: 12rem;
+    margin-bottom: 10rem;
   }
 }

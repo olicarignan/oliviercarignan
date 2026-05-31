@@ -28,7 +28,12 @@ export function Slider({ projects }) {
   const scrollTimer = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
-  const [layout, setLayout] = useState({ inset: 0, itemWidth: 0, metaInset: 0, isMobile: false });
+  const [layout, setLayout] = useState({
+    inset: 0,
+    itemWidth: 0,
+    metaInset: 0,
+    isMobile: false,
+  });
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [sliderVideosHidden, setSliderVideosHidden] = useState(false);
   const dragDistRef = useRef(0);
@@ -45,23 +50,28 @@ export function Slider({ projects }) {
       const style = getComputedStyle(subgrid);
       const gap = parseFloat(style.columnGap) || 0;
       const rect = subgrid.getBoundingClientRect();
-      const columns = parseInt(getComputedStyle(document.querySelector(".grid")).getPropertyValue("--columns")) || 4;
+      const columns =
+        parseInt(
+          getComputedStyle(document.querySelector(".grid")).getPropertyValue(
+            "--columns",
+          ),
+        ) || 4;
       const colWidth = (rect.width - (columns - 1) * gap) / columns;
       const isDesktop = window.matchMedia("(min-width: 700px)").matches;
       if (isDesktop) {
         setLayout({
           inset: rect.left - 12,
           itemWidth: rect.width + 24,
-          metaInset: rect.left + colWidth + gap,
+          metaInset: rect.left + 2 * (colWidth + gap),
           isMobile: false,
         });
       } else {
-        const mobileItemWidth = rect.width + 24;
+        const mobileItemWidth = window.innerWidth - 32;
         const mobilePad = (window.innerWidth - mobileItemWidth) / 2;
         setLayout({
           inset: mobilePad,
           itemWidth: mobileItemWidth,
-          metaInset: mobilePad + 12,
+          metaInset: rect.left,
           isMobile: true,
         });
       }
@@ -93,9 +103,13 @@ export function Slider({ projects }) {
       if (!track || !layout.itemWidth) return;
       const items = track.querySelectorAll(".slider__item");
       if (!items[index]) return;
-      items[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: layout.isMobile ? "center" : "start" });
+      items[index].scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: layout.isMobile ? "center" : "start",
+      });
     },
-    [layout.itemWidth, layout.isMobile]
+    [layout.itemWidth, layout.isMobile],
   );
 
   const updateMobileScales = useCallback((track) => {
@@ -164,7 +178,10 @@ export function Slider({ projects }) {
       let bestOverlap = 0;
       items.forEach((item, i) => {
         const rect = item.getBoundingClientRect();
-        const overlap = Math.max(0, Math.min(rect.right, slotRight) - Math.max(rect.left, slotLeft));
+        const overlap = Math.max(
+          0,
+          Math.min(rect.right, slotRight) - Math.max(rect.left, slotLeft),
+        );
         if (overlap > bestOverlap) {
           bestOverlap = overlap;
           bestIndex = i;
@@ -198,7 +215,6 @@ export function Slider({ projects }) {
     }
   }, [layout.isMobile, updateMobileScales]);
 
-
   const openLightbox = useCallback((index) => {
     const sliderItems = trackRef.current?.querySelectorAll(".slider__item");
     if (!sliderItems?.[index]) return;
@@ -229,14 +245,17 @@ export function Slider({ projects }) {
     }
   }, []);
 
-  const handleItemClick = useCallback((index) => {
-    if (index === activeIndex) {
-      openLightbox(index);
-    } else {
-      pendingLightbox.current = index;
-      scrollToIndex(index);
-    }
-  }, [activeIndex, openLightbox, scrollToIndex]);
+  const handleItemClick = useCallback(
+    (index) => {
+      if (index === activeIndex) {
+        openLightbox(index);
+      } else {
+        pendingLightbox.current = index;
+        scrollToIndex(index);
+      }
+    },
+    [activeIndex, openLightbox, scrollToIndex],
+  );
 
   const handlePointerDown = useCallback((e) => {
     if (e.pointerType === "touch") return;
@@ -270,64 +289,75 @@ export function Slider({ projects }) {
     trackRef.current.scrollLeft = ds.scrollLeft - (e.clientX - ds.startX);
   }, []);
 
-  const handlePointerUp = useCallback((e) => {
-    const ds = dragState.current;
-    if (!ds.isDragging) return;
-    ds.isDragging = false;
-    const track = trackRef.current;
-    track.releasePointerCapture(e.pointerId);
+  const handlePointerUp = useCallback(
+    (e) => {
+      const ds = dragState.current;
+      if (!ds.isDragging) return;
+      ds.isDragging = false;
+      const track = trackRef.current;
+      track.releasePointerCapture(e.pointerId);
 
-    // If barely moved, treat as click
-    if (dragDistRef.current < 5) {
-      track.style.scrollSnapType = "x mandatory";
-      const el = document.elementFromPoint(e.clientX, e.clientY)?.closest(".slider__item");
-      if (el) {
-        const items = Array.from(track.querySelectorAll(".slider__item"));
-        const index = items.indexOf(el);
-        if (index >= 0) handleItemClick(index);
+      // If barely moved, treat as click
+      if (dragDistRef.current < 5) {
+        track.style.scrollSnapType = "x mandatory";
+        const el = document
+          .elementFromPoint(e.clientX, e.clientY)
+          ?.closest(".slider__item");
+        if (el) {
+          const items = Array.from(track.querySelectorAll(".slider__item"));
+          const index = items.indexOf(el);
+          if (index >= 0) handleItemClick(index);
+        }
+        return;
       }
-      return;
-    }
 
-    // Inertia scroll
-    let velocity = -ds.velocity * 1000; // px per second
-    const friction = 0.92;
-    let lastTime = performance.now();
+      // Inertia scroll
+      let velocity = -ds.velocity * 1000; // px per second
+      const friction = 0.92;
+      let lastTime = performance.now();
 
-    const step = (now) => {
-      const dt = (now - lastTime) / 1000;
-      lastTime = now;
-      velocity *= friction;
-      track.scrollLeft += velocity * dt;
+      const step = (now) => {
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+        velocity *= friction;
+        track.scrollLeft += velocity * dt;
 
-      if (Math.abs(velocity) > 50) {
-        requestAnimationFrame(step);
-      } else {
-        // Snap to nearest item
-        const items = track.querySelectorAll(".slider__item");
-        let closest = 0;
-        let closestDist = Infinity;
-        items.forEach((item, i) => {
-          const dist = Math.abs(item.getBoundingClientRect().left - layout.inset);
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = i;
-          }
-        });
+        if (Math.abs(velocity) > 50) {
+          requestAnimationFrame(step);
+        } else {
+          // Snap to nearest item
+          const items = track.querySelectorAll(".slider__item");
+          let closest = 0;
+          let closestDist = Infinity;
+          items.forEach((item, i) => {
+            const dist = Math.abs(
+              item.getBoundingClientRect().left - layout.inset,
+            );
+            if (dist < closestDist) {
+              closestDist = dist;
+              closest = i;
+            }
+          });
 
-        const onScrollEnd = () => {
-          clearTimeout(fallback);
-          track.style.scrollSnapType = "x mandatory";
-          track.removeEventListener("scrollend", onScrollEnd);
-        };
-        const fallback = setTimeout(onScrollEnd, 300);
-        track.addEventListener("scrollend", onScrollEnd, { once: true });
-        items[closest].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-      }
-    };
+          const onScrollEnd = () => {
+            clearTimeout(fallback);
+            track.style.scrollSnapType = "x mandatory";
+            track.removeEventListener("scrollend", onScrollEnd);
+          };
+          const fallback = setTimeout(onScrollEnd, 300);
+          track.addEventListener("scrollend", onScrollEnd, { once: true });
+          items[closest].scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+          });
+        }
+      };
 
-    requestAnimationFrame(step);
-  }, [layout.inset, handleItemClick]);
+      requestAnimationFrame(step);
+    },
+    [layout.inset, handleItemClick],
+  );
 
   // Hide slider videos after backdrop fades in, restore on close
   useEffect(() => {
@@ -431,7 +461,10 @@ export function Slider({ projects }) {
 
   // Open lightbox after pending scroll settles
   useEffect(() => {
-    if (pendingLightbox.current !== null && activeIndex === pendingLightbox.current) {
+    if (
+      pendingLightbox.current !== null &&
+      activeIndex === pendingLightbox.current
+    ) {
       const idx = pendingLightbox.current;
       pendingLightbox.current = null;
       // Small delay to let scroll fully settle
@@ -439,16 +472,19 @@ export function Slider({ projects }) {
     }
   }, [activeIndex, openLightbox]);
 
-  const handleLightboxActiveChange = useCallback((index) => {
-    setActiveIndex(index);
-    externalScroll.current = true;
-    scrollToIndex(index);
-    // Clear flag after scroll settles
-    clearTimeout(scrollTimer.current);
-    scrollTimer.current = setTimeout(() => {
-      externalScroll.current = false;
-    }, 300);
-  }, [scrollToIndex]);
+  const handleLightboxActiveChange = useCallback(
+    (index) => {
+      setActiveIndex(index);
+      externalScroll.current = true;
+      scrollToIndex(index);
+      // Clear flag after scroll settles
+      clearTimeout(scrollTimer.current);
+      scrollTimer.current = setTimeout(() => {
+        externalScroll.current = false;
+      }, 300);
+    },
+    [scrollToIndex],
+  );
 
   const active = projects[activeIndex];
 
@@ -494,7 +530,11 @@ export function Slider({ projects }) {
             >
               <div className="slider__item-inner">
                 <picture>
-                  <source srcSet={img.webpSrcSet} sizes="(min-width: 700px) 628px, 82vw" type="image/webp" />
+                  <source
+                    srcSet={img.webpSrcSet}
+                    sizes="(min-width: 700px) 628px, 82vw"
+                    type="image/webp"
+                  />
                   <img
                     src={img.src}
                     srcSet={img.srcSet}
@@ -504,12 +544,16 @@ export function Slider({ projects }) {
                     fetchPriority={i === 0 ? "high" : undefined}
                     loading={i <= 1 ? "eager" : "lazy"}
                     decoding={i <= 1 ? "sync" : "async"}
-                    style={img.base64 ? {
-                      backgroundImage: `url(${img.base64})`,
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "center",
-                    } : undefined}
+                    style={
+                      img.base64
+                        ? {
+                            backgroundImage: `url(${img.base64})`,
+                            backgroundSize: "cover",
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "center",
+                          }
+                        : undefined
+                    }
                   />
                 </picture>
                 {videoUrl && (
@@ -529,7 +573,10 @@ export function Slider({ projects }) {
       </motion.div>
       <motion.div
         className="slider__meta"
-        style={{ paddingLeft: `${layout.metaInset}px` }}
+        style={{
+          paddingLeft: `${layout.metaInset}px`,
+          paddingRight: `${layout.metaInset}px`,
+        }}
         variants={itemFadeIn}
       >
         <div className="slider__meta-inner">

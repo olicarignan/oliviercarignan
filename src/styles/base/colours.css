@@ -1,5 +1,8 @@
 :root {
   --background-color: #fff;
-  --text-color: #131718;
-  --accent-color: #63635e;
+  --color-black: #131718;
+  --color-grey: #63635e;
+  --accent-color: var(--color-black);
+  --text-color: var(--color-grey);
+  --border-color: #bfbfbf;
 }

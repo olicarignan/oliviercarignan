@@ -42,9 +42,13 @@ export function ThoughtsSlider({ thoughts = [] }) {
   const setSelectedThought = useCallback(
     (thought) => {
       if (thought) {
-        router.push({ query: { thought: thought.slug } }, undefined, { shallow: true });
+        router.push({ query: { thought: thought.slug } }, undefined, {
+          shallow: true,
+        });
       } else {
-        router.push({ pathname: router.pathname }, undefined, { shallow: true });
+        router.push({ pathname: router.pathname }, undefined, {
+          shallow: true,
+        });
       }
     },
     [router],
@@ -69,13 +73,13 @@ export function ThoughtsSlider({ thoughts = [] }) {
 
       let cardWidth;
       if (isDesktop) {
-        cardWidth = 3 * colWidth + 2 * subgridGap;
+        cardWidth = 4 * colWidth + 3 * subgridGap;
       } else {
         cardWidth = 3 * colWidth + 2 * subgridGap;
       }
 
       setLayout({
-        inset: isDesktop ? rect.left + colWidth + subgridGap : rect.left,
+        inset: rect.left,
         itemWidth: cardWidth,
       });
     };
@@ -154,66 +158,61 @@ export function ThoughtsSlider({ thoughts = [] }) {
     trackRef.current.scrollLeft = ds.scrollLeft - (e.clientX - ds.startX);
   }, []);
 
-  const handlePointerUp = useCallback((e) => {
-    const ds = dragState.current;
-    if (!ds.isDragging) return;
-    ds.isDragging = false;
-    const track = trackRef.current;
-    track.releasePointerCapture(e.pointerId);
+  const handlePointerUp = useCallback(
+    (e) => {
+      const ds = dragState.current;
+      if (!ds.isDragging) return;
+      ds.isDragging = false;
+      const track = trackRef.current;
+      track.releasePointerCapture(e.pointerId);
 
-    if (dragDistRef.current < 5) {
-      track.style.scrollSnapType = "x mandatory";
-      setIsDragging(false);
-      const el = document.elementFromPoint(e.clientX, e.clientY)?.closest(".thoughts__item");
-      if (el) {
-        const items = Array.from(track.querySelectorAll(".thoughts__item"));
-        const index = items.indexOf(el);
-        if (index >= 0 && thoughts[index]) {
-          setSelectedThought(thoughts[index]);
-        }
-      }
-      return;
-    }
-
-    let velocity = -ds.velocity * 1000;
-    const friction = 0.92;
-    let lastTime = performance.now();
-
-    const step = (now) => {
-      const dt = (now - lastTime) / 1000;
-      lastTime = now;
-      velocity *= friction;
-      track.scrollLeft += velocity * dt;
-
-      if (Math.abs(velocity) > 50) {
-        requestAnimationFrame(step);
-      } else {
+      if (dragDistRef.current < 5) {
         track.style.scrollSnapType = "x mandatory";
         setIsDragging(false);
+        const el = document
+          .elementFromPoint(e.clientX, e.clientY)
+          ?.closest(".thoughts__item");
+        if (el) {
+          const items = Array.from(track.querySelectorAll(".thoughts__item"));
+          const index = items.indexOf(el);
+          if (index >= 0 && thoughts[index]) {
+            setSelectedThought(thoughts[index]);
+          }
+        }
+        return;
       }
-    };
 
-    requestAnimationFrame(step);
-  }, [thoughts]);
+      let velocity = -ds.velocity * 1000;
+      const friction = 0.92;
+      let lastTime = performance.now();
 
-  const handleCardClick = useCallback(
-    (thought) => {
-      if (dragDistRef.current >= 5) return;
-      setSelectedThought(thought);
+      const step = (now) => {
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+        velocity *= friction;
+        track.scrollLeft += velocity * dt;
+
+        if (Math.abs(velocity) > 50) {
+          requestAnimationFrame(step);
+        } else {
+          track.style.scrollSnapType = "x mandatory";
+          setIsDragging(false);
+        }
+      };
+
+      requestAnimationFrame(step);
     },
-    [],
+    [thoughts],
   );
+
+  const handleCardClick = useCallback((thought) => {
+    if (dragDistRef.current >= 5) return;
+    setSelectedThought(thought);
+  }, []);
 
   return (
     <>
       <motion.div className="thoughts" variants={staggerItems}>
-        <motion.h3
-          className="thoughts__title"
-          style={{ paddingLeft: `${layout.inset}px` }}
-          variants={itemFadeIn}
-        >
-          Thoughts
-        </motion.h3>
         <motion.div
           className="thoughts__track"
           ref={trackRef}
@@ -229,7 +228,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
           }}
         >
           {thoughts.map((thought, i) => {
-            const date = new Date(thought.date)
+            const date = new Date(thought.date);
 
             const img = thought.featuredImage?.responsiveImage;
             return (
@@ -258,7 +257,11 @@ export function ThoughtsSlider({ thoughts = [] }) {
                 >
                   {img && (
                     <picture>
-                      <source srcSet={img.webpSrcSet} sizes="(min-width: 700px) 300px, 75vw" type="image/webp" />
+                      <source
+                        srcSet={img.webpSrcSet}
+                        sizes="(min-width: 700px) 300px, 75vw"
+                        type="image/webp"
+                      />
                       <img
                         src={img.src}
                         srcSet={img.srcSet}
@@ -267,12 +270,16 @@ export function ThoughtsSlider({ thoughts = [] }) {
                         draggable={false}
                         loading={i <= 1 ? "eager" : "lazy"}
                         decoding={i <= 1 ? "sync" : "async"}
-                        style={img.base64 ? {
-                          backgroundImage: `url(${img.base64})`,
-                          backgroundSize: "cover",
-                          backgroundRepeat: "no-repeat",
-                          backgroundPosition: "center",
-                        } : undefined}
+                        style={
+                          img.base64
+                            ? {
+                                backgroundImage: `url(${img.base64})`,
+                                backgroundSize: "cover",
+                                backgroundRepeat: "no-repeat",
+                                backgroundPosition: "center",
+                              }
+                            : undefined
+                        }
                       />
                     </picture>
                   )}
@@ -280,17 +287,36 @@ export function ThoughtsSlider({ thoughts = [] }) {
                   <div className="meta">
                     <div className="meta__text">
                       <h4>{thought.title}</h4>
-                      <span>{date.toLocaleDateString("en-CA", {month: "long", year: "numeric"})}</span>
+                      <span>
+                        {date.toLocaleDateString("en-CA", {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
                     </div>
-                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clipPath="url(#clip0_843_1349)">
-                    <path d="M4 13.5455V9.00004H5.5V12.1819H9V13.5455H4ZM12.5 9.00004V5.81823H9V4.45459H14V9.00004H12.5Z" fill="#FAFAFA"/>
-                    </g>
-                    <defs>
-                    <clipPath id="clip0_843_1349">
-                    <rect width="10" height="10" fill="white" transform="translate(4 4)"/>
-                    </clipPath>
-                    </defs>
+                    <svg
+                      width="17"
+                      height="17"
+                      viewBox="0 0 17 17"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g clipPath="url(#clip0_843_1349)">
+                        <path
+                          d="M4 13.5455V9.00004H5.5V12.1819H9V13.5455H4ZM12.5 9.00004V5.81823H9V4.45459H14V9.00004H12.5Z"
+                          fill="#FAFAFA"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_843_1349">
+                          <rect
+                            width="10"
+                            height="10"
+                            fill="white"
+                            transform="translate(4 4)"
+                          />
+                        </clipPath>
+                      </defs>
                     </svg>
                   </div>
                 </div>

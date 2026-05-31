@@ -211,7 +211,7 @@ export function ThoughtModal({ thought, onClose }) {
           transition={panelTransition}
         >
           <div
-            className="thought-modal__card grid"
+            className="thought-modal__card"
             onClick={(e) => e.stopPropagation()}
           >
             {isMobile && (
@@ -219,33 +219,31 @@ export function ThoughtModal({ thought, onClose }) {
                 <div className="thought-modal__drag-line" />
               </div>
             )}
-            <div className="thought-modal__card__inner subgrid">
-              <div className="thought-modal__image">
-                {img && (
-                  <picture>
-                    <source srcSet={img.webpSrcSet} type="image/webp" />
-                    <img
-                      src={img.src}
-                      srcSet={img.srcSet}
-                      alt={img.alt || thought.title}
-                    />
-                  </picture>
-                )}
-                <div className="thought-modal__image-overlay" />
+            <div className="thought-modal__image">
+              {img && (
+                <picture>
+                  <source srcSet={img.webpSrcSet} type="image/webp" />
+                  <img
+                    src={img.src}
+                    srcSet={img.srcSet}
+                    alt={img.alt || thought.title}
+                  />
+                </picture>
+              )}
+              <div className="thought-modal__image-overlay" />
+            </div>
+            <div className="thought-modal__body">
+              <div className="thought-modal__meta">
+                <h2 className="thought-modal__title">{thought.title}</h2>
+                <span>
+                  {date.toLocaleDateString("en-CA", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
               </div>
-              <div className="thought-modal__body">
-                <div className="thought-modal__meta">
-                  <h2 className="thought-modal__title">{thought.title}</h2>
-                  <span>
-                    {date.toLocaleDateString("en-CA", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="thought-modal__body-inner">
-                  {content && renderDast(content)}
-                </div>
+              <div className="thought-modal__body-inner">
+                {content && renderDast(content)}
               </div>
             </div>
           </div>
