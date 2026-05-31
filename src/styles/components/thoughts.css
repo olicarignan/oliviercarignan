@@ -37,6 +37,8 @@
       filter 0.35s cubic-bezier(0.2, 0, 0, 1);
 
     @media (hover: hover) {
+      will-change: transform, filter;
+
       &:hover {
         translate: 0 -6px;
         scale: 1.01;
@@ -82,6 +84,12 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
+      /* Keep the text on its own composited layer so the parent's
+         scale/tilt transforms don't re-rasterize it (which makes the
+         line-height appear to jump on hover). */
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
 
       @media (min-width: 700px) {
         bottom: 2rem;
