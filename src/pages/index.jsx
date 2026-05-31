@@ -29,7 +29,8 @@ export default function Home({ data }) {
         <motion.p variants={fadeIn}>
           I work across interfaces and brand to create holistic systems and
           experiences that intuitively become an extension of oneself. I believe
-          in ideas over opinions and exploring one hundred ideas to find the right one.
+          in ideas over opinions and exploring one hundred ideas to find the
+          right one.
         </motion.p>
         <motion.p variants={fadeIn}>
           I am driven by curiosity and strive for a high level of craftsmanship
@@ -51,8 +52,8 @@ export default function Home({ data }) {
         <motion.div className="clients" variants={fadeIn}>
           <h3>Selected Clients</h3>
           <p>
-            Apple, WØRKS, Evenko, RTINGS.com, ARC Health, LG2, POP Montréal,
-            Rounder
+            Apple, WØRKS Studio, Evenko, RTINGS.com, REF Digital, ARC Health,
+            LG2, Rounder
           </p>
         </motion.div>
         <ThoughtsSlider thoughts={data.thoughts} />
