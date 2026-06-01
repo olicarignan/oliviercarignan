@@ -13,12 +13,25 @@
     display: flex;
     gap: var(--gap);
     overflow-x: auto;
+
+    @media (max-width: 699px) {
+      gap: 0;
+    }
+
     overflow-y: clip;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-block: 48px;
     margin-block: -48px;
+
+    @media (hover: hover) and (pointer: fine) {
+      cursor: grab;
+
+      &.slider__track--dragging {
+        cursor: grabbing;
+      }
+    }
 
     &::-webkit-scrollbar {
       display: none;
@@ -70,18 +83,10 @@
       }
     }
 
-    &.slider__item--transitioning .slider__item-inner {
-      filter: none;
-      transition: none;
-    }
-
     img,
     video {
       display: block;
       border-radius: 16px;
-      cursor:
-        url("/images/svg/cursor_plus.svg") 8 8,
-        zoom-in;
       width: 100%;
       object-fit: cover;
       aspect-ratio: 3 / 2;
@@ -107,15 +112,15 @@
     margin-top: 0.75lh;
 
     h3 {
-      color: var(--text-color);
+      color: var(--accent-color);
       margin: 0;
     }
     p {
-      color: var(--accent-color);
+      color: var(--text-color);
     }
   }
 
   @media (min-width: 700px) {
-    margin-block: 12rem;
+    margin-block: 10rem;
   }
 }

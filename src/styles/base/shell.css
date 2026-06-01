@@ -6,7 +6,7 @@ html,
 body {
   font-family: var(--font-sans);
   font-weight: 375 !important;
-  color: var(--text-color);
+  color: var(--color-grey);
   background-color: var(--background-color);
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
