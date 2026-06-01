@@ -72,15 +72,6 @@
         border-radius: 12px;
         will-change: transform, filter;
       }
-
-      @media (hover: hover) {
-        &:hover {
-          translate: 0 -6px;
-          transform: scale(1.01);
-          filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05))
-            drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02));
-        }
-      }
     }
 
     img,
