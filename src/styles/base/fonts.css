@@ -1,3 +1,4 @@
+/* Kept for reference — not currently used (see --font-sans below). */
 @font-face {
   font-family: m;
   font-style: normal;
@@ -7,6 +8,91 @@
     format("woff2");
 }
 
+/* Suisse Int'l — static cuts mapped to weight ranges so the site's
+   fractional weights (e.g. 375, 425) resolve to the nearest cut. */
+@font-face {
+  font-family: s;
+  font-style: normal;
+  font-weight: 100 374;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/SuisseIntl%20Light.woff2") format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: normal;
+  font-weight: 375 449;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: normal;
+  font-weight: 450 499;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/SuisseIntl%20Book.woff2") format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: normal;
+  font-weight: 500 549;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/SuisseIntl%20Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: normal;
+  font-weight: 550 649;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: normal;
+  font-weight: 650 900;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: s;
+  font-style: italic;
+  font-weight: 100 374;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20Light%20Italic.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: italic;
+  font-weight: 375 449;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20Italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: italic;
+  font-weight: 450 549;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20Book%20Italic.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: italic;
+  font-weight: 550 649;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20SemiBold%20Italic.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: s;
+  font-style: italic;
+  font-weight: 650 900;
+  font-display: swap;
+  src: url("/fonts/SuisseIntl/Suisse%20Intl%20Bold%20Italic.woff2")
+    format("woff2");
+}
+
 :root {
-  --font-sans: "m", Helvetica, sans-serif;
+  --font-sans: "s", Helvetica, sans-serif;
 }
