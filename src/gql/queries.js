@@ -6,7 +6,7 @@ export const getHome = `
         id
         typeYear
         featuredImage {
-          responsiveImage(imgixParams: { auto: [format, compress], q: 75, w: 680, h: 453, fit: crop }) {
+          responsiveImage(imgixParams: { auto: [format, compress], q: 80, w: 1680, h: 1120, fit: crop }) {
             srcSet
             webpSrcSet
             sizes
@@ -34,7 +34,7 @@ export const getHome = `
       value
       }
       featuredImage {
-      responsiveImage(imgixParams: { auto: [format, compress], q: 60, w: 600, h: 750, fit: crop }) {
+      responsiveImage(imgixParams: { auto: [format, compress], q: 75, w: 900, h: 1125, fit: crop }) {
           srcSet
           webpSrcSet
           sizes

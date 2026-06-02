@@ -259,13 +259,13 @@ export function ThoughtsSlider({ thoughts = [] }) {
                     <picture>
                       <source
                         srcSet={img.webpSrcSet}
-                        sizes="(min-width: 700px) 300px, 75vw"
+                        sizes="(min-width: 700px) 400px, 75vw"
                         type="image/webp"
                       />
                       <img
                         src={img.src}
                         srcSet={img.srcSet}
-                        sizes="(min-width: 700px) 300px, 75vw"
+                        sizes="(min-width: 700px) 400px, 75vw"
                         alt={img.alt || thought.title}
                         draggable={false}
                         loading={i <= 1 ? "eager" : "lazy"}
