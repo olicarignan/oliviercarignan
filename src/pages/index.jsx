@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
-import { track } from "@vercel/analytics";
 import Layout from "@/layouts/Layout";
 import { IconLink } from "@/components/IconLink";
 import { ArrowIcon } from "@/components/ArrowIcon";
@@ -87,17 +86,7 @@ function Projects() {
           className="project"
           onMouseEnter={() => setHovered(i)}
         >
-          <a
-            href={project.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() =>
-              track("project_click", {
-                project: project.title,
-                href: project.href,
-              })
-            }
-          >
+          <a href={project.href} target="_blank" rel="noopener noreferrer">
             <h4>
               <span className="project__icon">
                 <ArrowIcon />
