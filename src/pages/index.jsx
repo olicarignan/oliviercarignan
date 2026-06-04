@@ -7,7 +7,7 @@ import { fetchDato } from "@/utils/datocms";
 import { getHome } from "@/gql/queries";
 import { Slider } from "@/components/Slider";
 import { ThoughtsSlider } from "@/components/ThoughtsSlider";
-import { Footer } from "@/components/Footer";
+import { FooterAlt as Footer } from "@/components/FooterAlt";
 
 const fadeIn = {
   initial: { opacity: 0, y: 12, filter: "blur(6px)" },

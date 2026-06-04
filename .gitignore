@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# heavy uncompressed model sources (kept locally, never committed)
+/public/models/_*.glb

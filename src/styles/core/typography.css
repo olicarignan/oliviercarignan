@@ -32,8 +32,13 @@ a {
 }
 
 p a {
-  text-decoration: underline;
   color: var(--color-black);
+  font-weight: 450;
+  letter-spacing: -0.0175em;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 ul {

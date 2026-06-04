@@ -35,9 +35,9 @@ body {
 }
 
 *::selection {
-  text-shadow: 0 0 0.75rem var(--text-color);
-  color: transparent;
-  background-color: transparent;
+  background-color: var(--highlight-color);
+  color: var(--color-black);
+  text-shadow: none;
 }
 
 .app {
