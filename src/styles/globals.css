@@ -1,9 +1,9 @@
-@import "./base/shell.css";
-@import "./base/variables.css";
-@import "./base/colours.css";
-@import "./base/typography.css";
-@import "./base/fonts.css";
-@import "./base/grid.css";
+@import "./core/shell.css";
+@import "./core/variables.css";
+@import "./core/colours.css";
+@import "./core/typography.css";
+@import "./core/fonts.css";
+@import "./core/grid.css";
 
 @import "./components/layout.css";
 @import "./components/nav.css";
