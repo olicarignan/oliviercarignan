@@ -190,7 +190,7 @@ function Shape({ speedMultiplier, inputIntensity }) {
     <group ref={groupRef}>
       <mesh geometry={geometry} scale={[0.3, -0.3, 0.3]}>
         <meshPhysicalMaterial
-          color="#7a7a7a"
+          color="#b8b8b8"
           metalness={0.95}
           roughness={1.0}
           roughnessMap={scratchTexture}
@@ -224,7 +224,7 @@ export function FooterShape({ speedMultiplier, inputIntensity }) {
       className="footer__canvas"
     >
       <SceneSetup />
-      <ambientLight intensity={0.15} />
+      <ambientLight intensity={0.35} />
       <directionalLight position={[5, 5, 5]} intensity={3.5} color="#ffffff" />
       <directionalLight position={[-6, 2, -4]} intensity={0.6} color="#e0d8cc" />
       <directionalLight position={[2, -6, 3]} intensity={1.2} color="#c8d8e8" />
