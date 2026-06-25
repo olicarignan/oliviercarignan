@@ -24,6 +24,75 @@ function SceneSetup() {
   return null;
 }
 
+function makeScratchTexture() {
+  const size = 1024;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  // Seeded xorshift RNG for reproducible scratches
+  let s = 0xdeadbeef;
+  const rng = () => {
+    s ^= s << 13; s ^= s >> 17; s ^= s << 5;
+    return (s >>> 0) / 4294967296;
+  };
+
+  // Base: medium-low roughness surface
+  ctx.fillStyle = "#424242";
+  ctx.fillRect(0, 0, size, size);
+
+  // Fine grain noise over the whole surface
+  for (let i = 0; i < size * size * 0.08; i++) {
+    const x = Math.floor(rng() * size);
+    const y = Math.floor(rng() * size);
+    const v = 40 + Math.floor(rng() * 55);
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
+    ctx.fillRect(x, y, rng() < 0.3 ? 2 : 1, 1);
+  }
+
+  // Scratches — mostly directional, varying depth and width
+  for (let i = 0; i < 280; i++) {
+    const x = rng() * size;
+    const y = rng() * size;
+    const len = 30 + rng() * 350;
+    // Bias toward horizontal (machined/ground metal look)
+    const angle = rng() < 0.75
+      ? (rng() - 0.5) * 0.25
+      : (rng() - 0.5) * Math.PI;
+    const bright = 110 + Math.floor(rng() * 145);
+    ctx.strokeStyle = `rgb(${bright},${bright},${bright})`;
+    ctx.lineWidth = rng() < 0.7 ? 0.4 + rng() * 0.9 : 1.2 + rng() * 2.5;
+    ctx.globalAlpha = 0.45 + rng() * 0.55;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
+    ctx.stroke();
+  }
+
+  // A few deep gouges
+  for (let i = 0; i < 12; i++) {
+    const x = rng() * size;
+    const y = rng() * size;
+    const len = 80 + rng() * 200;
+    const angle = (rng() - 0.5) * 0.6;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5 + rng() * 3;
+    ctx.globalAlpha = 0.3 + rng() * 0.4;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
 function Shape({ speedMultiplier, inputIntensity }) {
   const groupRef = useRef();
   const isDragging = useRef(false);
@@ -31,6 +100,8 @@ function Shape({ speedMultiplier, inputIntensity }) {
   const momentum = useRef(0);
   const tiltIntensity = useRef(0);
   const { gl } = useThree();
+
+  const scratchTexture = useMemo(() => makeScratchTexture(), []);
 
   useEffect(() => {
     const onPointerMove = (e) => {
@@ -119,12 +190,11 @@ function Shape({ speedMultiplier, inputIntensity }) {
     <group ref={groupRef}>
       <mesh geometry={geometry} scale={[0.3, -0.3, 0.3]}>
         <meshPhysicalMaterial
-          color="#c0c0c0"
-          metalness={1}
-          roughness={0.275}
-          iridescence={0.25}
-          iridescenceIOR={1.5}
-          iridescenceThicknessRange={[300, 600]}
+          color="#7a7a7a"
+          metalness={0.95}
+          roughness={1.0}
+          roughnessMap={scratchTexture}
+          iridescence={0}
         />
       </mesh>
       <mesh
@@ -154,10 +224,10 @@ export function FooterShape({ speedMultiplier, inputIntensity }) {
       className="footer__canvas"
     >
       <SceneSetup />
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 5, 5]} intensity={2} color="#ffffff" />
-      <directionalLight position={[-5, 3, -3]} intensity={0.8} color="#ffbbcc" />
-      <directionalLight position={[3, -5, 2]} intensity={1.5} color="#44aaff" />
+      <ambientLight intensity={0.15} />
+      <directionalLight position={[5, 5, 5]} intensity={3.5} color="#ffffff" />
+      <directionalLight position={[-6, 2, -4]} intensity={0.6} color="#e0d8cc" />
+      <directionalLight position={[2, -6, 3]} intensity={1.2} color="#c8d8e8" />
       <Shape speedMultiplier={speedMultiplier} inputIntensity={inputIntensity} />
     </Canvas>
   );
