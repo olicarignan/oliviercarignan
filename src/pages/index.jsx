@@ -22,7 +22,7 @@ const fadeIn = {
 const projects = [
   {
     title: "Metamorphosis",
-    description: "Animated text that morphs between values",
+    description: "A dependency-free text and icon morphing animation library",
     href: "https://metamorphosis.oliviercarignan.com",
   },
   {
