@@ -19,20 +19,7 @@ const fadeIn = {
   },
 };
 
-const projects = [
-  {
-    title: "Metamorphosis",
-    description: "A dependency-free text and icon morphing animation library",
-    href: "https://metamorphosis.oliviercarignan.com",
-  },
-  {
-    title: "Vitrine",
-    description: "Native scroll gallery with drag capability and lightbox",
-    href: "https://vitrine.oliviercarignan.com",
-  },
-];
-
-function Projects() {
+function Projects({ projects }) {
   const [hovered, setHovered] = useState(null);
   const itemRefs = useRef([]);
   const containerRef = useRef(null);
@@ -80,13 +67,13 @@ function Projects() {
       </AnimatePresence>
       {projects.map((project, i) => (
         <motion.div
-          key={project.title}
+          key={project.id}
           ref={(el) => (itemRefs.current[i] = el)}
           variants={fadeIn}
           className="project"
           onMouseEnter={() => setHovered(i)}
         >
-          <a href={project.href} target="_blank" rel="noopener noreferrer">
+          <a href={project.url} target="_blank" rel="noopener noreferrer">
             <h4>
               <span className="project__icon">
                 <ArrowIcon />
@@ -133,7 +120,7 @@ export default function Home({ data }) {
 
         <Slider projects={data.home.projects} />
 
-        <Projects />
+        <Projects projects={data.home.packages} />
 
         <ThoughtsSlider thoughts={data.thoughts} />
 
