@@ -291,6 +291,8 @@ export function ThoughtsSlider({ thoughts = [] }) {
                         {date.toLocaleDateString("en-CA", {
                           month: "long",
                           year: "numeric",
+                          // CMS dates are UTC; the visitor's zone can shift the month.
+                          timeZone: "UTC",
                         })}
                       </span>
                     </div>
