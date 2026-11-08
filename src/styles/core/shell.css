@@ -9,6 +9,9 @@ body {
   color: var(--color-grey);
   background-color: var(--background-color);
   overscroll-behavior: none;
+  /* Otherwise the browser "corrects" the scroll position when the entrance
+     animation moves things, shifting the page on every reload. */
+  overflow-anchor: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
