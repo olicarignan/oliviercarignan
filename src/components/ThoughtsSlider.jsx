@@ -2,27 +2,9 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import { ThoughtModal } from "./ThoughtModal";
 import { handleTiltMove, handleTiltLeave } from "../utils/tilt";
-
-const staggerItems = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.06,
-    },
-  },
-};
-
-const itemFadeIn = {
-  initial: { opacity: 0, y: 8 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1, ease: [0, 0.55, 0.45, 1] },
-  },
-};
 
 export function ThoughtsSlider({ thoughts = [] }) {
   const router = useRouter();
@@ -161,8 +143,8 @@ export function ThoughtsSlider({ thoughts = [] }) {
 
   return (
     <>
-      <motion.div className="thoughts" variants={staggerItems}>
-        <motion.div
+      <div className="thoughts">
+        <div
           className="thoughts__track"
           ref={trackRef}
           onPointerDown={handlePointerDown}
@@ -176,10 +158,10 @@ export function ThoughtsSlider({ thoughts = [] }) {
 
             const img = thought.featuredImage?.responsiveImage;
             return (
-              <motion.div
+              <div
                 key={thought.id}
-                className="thoughts__item"
-                variants={itemFadeIn}
+                className="thoughts__item enter enter--media"
+                style={{ "--i": i }}
               >
                 <div
                   className="thoughts__card"
@@ -263,11 +245,11 @@ export function ThoughtsSlider({ thoughts = [] }) {
                     </svg>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
       <AnimatePresence>
         {selectedThought && (
           <ThoughtModal

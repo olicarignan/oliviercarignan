@@ -1,25 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion } from "motion/react";
 import { TextMorph } from "torph/react";
-const staggerItems = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.06,
-    },
-  },
-};
-
-const itemFadeIn = {
-  initial: { opacity: 0, y: 8 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1, ease: [0, 0.55, 0.45, 1] },
-  },
-};
 
 export function Slider({ projects }) {
   const trackRef = useRef(null);
@@ -335,8 +317,8 @@ export function Slider({ projects }) {
   const active = projects[activeIndex];
 
   return (
-    <motion.div className="slider" variants={staggerItems}>
-      <motion.div
+    <div className="slider">
+      <div
         className="slider__track"
         ref={trackRef}
         tabIndex={-1}
@@ -350,10 +332,10 @@ export function Slider({ projects }) {
           const img = project.featuredImage.responsiveImage;
           const videoUrl = project.video?.url;
           return (
-            <motion.div
+            <div
               key={project.id}
-              className={`slider__item${i === activeIndex ? " slider__item--active" : ""}`}
-              variants={itemFadeIn}
+              className={`slider__item enter enter--media${i === activeIndex ? " slider__item--active" : ""}`}
+              style={{ "--i": i }}
               role="button"
               tabIndex={0}
               aria-label={project.title}
@@ -407,17 +389,20 @@ export function Slider({ projects }) {
                   />
                 )}
               </div>
-            </motion.div>
+            </div>
           );
         })}
-      </motion.div>
-      <motion.div className="slider__meta" variants={itemFadeIn}>
+      </div>
+      <div
+        className="slider__meta enter enter--media"
+        style={{ "--i": projects.length }}
+      >
         <div className="slider__meta-inner">
           <TextMorph as="h3">{active?.title}</TextMorph>
           <br />
           <TextMorph as="p">{active?.typeYear}</TextMorph>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

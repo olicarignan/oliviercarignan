@@ -9,16 +9,6 @@ import { Slider } from "@/components/Slider";
 import { ThoughtsSlider } from "@/components/ThoughtsSlider";
 import { Footer } from "@/components/Footer";
 
-const fadeIn = {
-  initial: { opacity: 0, y: 12, filter: "blur(6px)" },
-  animate: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 1, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
 function Projects({ projects }) {
   const [hovered, setHovered] = useState(null);
   const itemRefs = useRef([]);
@@ -66,11 +56,11 @@ function Projects({ projects }) {
         )}
       </AnimatePresence>
       {projects.map((project, i) => (
-        <motion.div
+        <div
           key={project.id}
           ref={(el) => (itemRefs.current[i] = el)}
-          variants={fadeIn}
-          className="project"
+          className="project enter"
+          style={{ "--i": 5 + i }}
           onMouseEnter={() => setHovered(i)}
         >
           <a href={project.url} target="_blank" rel="noopener noreferrer">
@@ -82,7 +72,7 @@ function Projects({ projects }) {
             </h4>
             <p>{project.description}</p>
           </a>
-        </motion.div>
+        </div>
       ))}
     </div>
   );
@@ -97,17 +87,17 @@ export default function Home({ data }) {
   return (
     <Layout>
       <main className="home">
-        <motion.p variants={fadeIn}>
+        <p className="enter" style={{ "--i": 1 }}>
           I work across interfaces and brand to create holistic systems and
           experiences that intuitively become an extension of oneself. I believe
           in ideas over opinions and exploring one hundred ideas to find the
           right one.
-        </motion.p>
-        <motion.p variants={fadeIn}>
+        </p>
+        <p className="enter" style={{ "--i": 2 }}>
           I am driven by curiosity and strive for a high level of craftsmanship
           in my work.
-        </motion.p>
-        <motion.p variants={fadeIn}>
+        </p>
+        <p className="enter" style={{ "--i": 3 }}>
           Co-Founder &amp; Product Lead at{" "}
           <a
             href="https://brunch.work"
@@ -116,7 +106,7 @@ export default function Home({ data }) {
           >
             Brunch
           </a>
-        </motion.p>
+        </p>
 
         <Slider projects={data.home.projects} />
 
@@ -124,15 +114,15 @@ export default function Home({ data }) {
 
         <ThoughtsSlider thoughts={data.thoughts} />
 
-        <motion.div className="clients" variants={fadeIn}>
+        <div className="clients enter" style={{ "--i": 8 }}>
           <h3>Selected Clients</h3>
           <p>
             Apple, WØRKS Studio, Evenko, RTINGS.com, REF Digital, ARC Health,
             LG2, Webisoft
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div className="connect" variants={fadeIn}>
+        <div className="connect enter" style={{ "--i": 9 }}>
           <h3>Connect</h3>
           <ul>
             <li>
@@ -170,7 +160,7 @@ export default function Home({ data }) {
               />
             </li>
           </ul>
-        </motion.div>
+        </div>
       </main>
       <Footer />
     </Layout>
