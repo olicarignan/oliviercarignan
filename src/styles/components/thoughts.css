@@ -1,9 +1,13 @@
 .thoughts {
+  --item-width: calc(3 * var(--column-width) + 2 * var(--gap));
+
   width: 100vw;
   margin-bottom: 4lh;
   margin-left: calc(-50vw + 50%);
 
   @media (min-width: 700px) {
+    --item-width: calc(4 * var(--column-width) + 3 * var(--gap));
+
     margin-bottom: 6lh;
   }
 
@@ -20,6 +24,8 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-block: 48px;
+    padding-inline: var(--content-left);
+    scroll-padding-left: var(--content-left);
     margin-block: -48px;
 
     &::-webkit-scrollbar {
@@ -29,6 +35,7 @@
 
   .thoughts__item {
     flex-shrink: 0;
+    width: var(--item-width);
     scroll-snap-align: start;
     filter: none;
     transition:

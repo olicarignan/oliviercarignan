@@ -1,10 +1,20 @@
 .slider {
+  --item-width: calc(100vw - 32px);
+  --inset: 16px;
+  --meta-inset: var(--content-left);
+
   width: 100vw;
   margin-top: 3lh;
   margin-bottom: 4.75lh;
   margin-left: calc(-50vw + 50%);
 
   @media (min-width: 700px) {
+    --item-width: calc(var(--content-width) + 24px);
+    --inset: calc(var(--content-left) - 12px);
+    --meta-inset: calc(
+      var(--content-left) + 2 * (var(--column-width) + var(--gap))
+    );
+
     margin-top: 4lh;
     margin-bottom: 6.75lh;
   }
@@ -18,11 +28,16 @@
       gap: 0;
     }
 
+    @media (min-width: 700px) {
+      scroll-padding-left: var(--inset);
+    }
+
     overflow-y: clip;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-block: 48px;
+    padding-inline: var(--inset);
     margin-block: -48px;
 
     @media (hover: hover) and (pointer: fine) {
@@ -44,6 +59,7 @@
 
   .slider__item {
     flex-shrink: 0;
+    width: var(--item-width);
     scroll-snap-align: start;
 
     &:focus-visible {
@@ -74,6 +90,15 @@
       }
     }
 
+    /* Matches what the mobile scroll effect applies, so the peeking next item
+       doesn't jump when JS takes over. */
+    &:not(:first-child) .slider__item-inner {
+      @media (max-width: 699px) {
+        transform: scale(0.95);
+        filter: brightness(0.85);
+      }
+    }
+
     img,
     video {
       display: block;
@@ -101,6 +126,15 @@
 
   .slider__meta {
     margin-top: 0.75lh;
+    padding-inline: var(--meta-inset);
+
+    /* Same as TextMorph applies on mount, so the line break between these
+       doesn't add a blank line before JS runs. */
+    h3,
+    p {
+      display: inline-block;
+      white-space: nowrap;
+    }
 
     h3 {
       color: var(--accent-color);

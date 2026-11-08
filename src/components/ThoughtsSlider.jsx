@@ -32,7 +32,6 @@ export function ThoughtsSlider({ thoughts = [] }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragDistRef = useRef(0);
-  const [layout, setLayout] = useState({ inset: 0, itemWidth: 0 });
 
   const thoughtParam = router.query.thought;
   const selectedThought = thoughtParam
@@ -53,56 +52,6 @@ export function ThoughtsSlider({ thoughts = [] }) {
     },
     [router],
   );
-
-  useEffect(() => {
-    const measure = () => {
-      const subgrid = document.querySelector(".subgrid");
-      if (!subgrid) return;
-
-      const style = getComputedStyle(subgrid);
-      const subgridGap = parseFloat(style.columnGap) || 0;
-      const rect = subgrid.getBoundingClientRect();
-      const columns =
-        parseInt(
-          getComputedStyle(document.querySelector(".grid")).getPropertyValue(
-            "--columns",
-          ),
-        ) || 4;
-      const colWidth = (rect.width - (columns - 1) * subgridGap) / columns;
-      const isDesktop = window.matchMedia("(min-width: 700px)").matches;
-
-      let cardWidth;
-      if (isDesktop) {
-        cardWidth = 4 * colWidth + 3 * subgridGap;
-      } else {
-        cardWidth = 3 * colWidth + 2 * subgridGap;
-      }
-
-      setLayout({
-        inset: rect.left,
-        itemWidth: cardWidth,
-      });
-    };
-
-    let resizeTimer;
-    const onResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(measure, 100);
-    };
-
-    measure();
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      clearTimeout(resizeTimer);
-    };
-  }, []);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    track.scrollLeft = 0;
-  }, [layout.inset]);
 
   const scrollRafTicking = useRef(false);
   const handleScroll = useCallback(() => {
@@ -220,12 +169,7 @@ export function ThoughtsSlider({ thoughts = [] }) {
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
-          style={{
-            paddingLeft: `${layout.inset}px`,
-            paddingRight: `${layout.inset}px`,
-            scrollPaddingLeft: `${layout.inset}px`,
-            touchAction: "pan-x pan-y",
-          }}
+          style={{ touchAction: "pan-x pan-y" }}
         >
           {thoughts.map((thought, i) => {
             const date = new Date(thought.date);
@@ -236,9 +180,6 @@ export function ThoughtsSlider({ thoughts = [] }) {
                 key={thought.id}
                 className="thoughts__item"
                 variants={itemFadeIn}
-                style={{
-                  width: `${layout.itemWidth}px`,
-                }}
               >
                 <div
                   className="thoughts__card"

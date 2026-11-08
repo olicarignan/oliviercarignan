@@ -19,8 +19,7 @@ export function Footer() {
   const lastTouchY = useRef(null);
 
   // Only start checking once the entrance has played, so the shape can't load
-  // on top of it. The sliders are measured by then too; before that the page
-  // is shorter and the footer wrongly reads as close.
+  // on top of it.
   useEffect(() => {
     let observer;
     const timer = setTimeout(() => {
