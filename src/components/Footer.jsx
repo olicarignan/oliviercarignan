@@ -1,9 +1,46 @@
-import { useRef, useEffect } from "react";
-import { useSpring, useMotionValue } from "motion/react";
-import { FooterShape } from "./FooterShape";
+import { useRef, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { useInView, useSpring, useMotionValue } from "motion/react";
+
+// Three.js is over half of the page's JS and its setup blocks the main thread,
+// so it loads separately, once the footer is getting close.
+const FooterShape = dynamic(
+  () => import("./FooterShape").then((mod) => mod.FooterShape),
+  { ssr: false },
+);
+
+// Slightly longer than the page's staggered entrance animation.
+const ENTRANCE_MS = 2000;
 
 export function Footer() {
+  const footerRef = useRef(null);
+  const [isNear, setIsNear] = useState(false);
+  const isOnScreen = useInView(footerRef);
   const lastTouchY = useRef(null);
+
+  // Only start checking once the entrance has played, so the shape can't load
+  // on top of it. The sliders are measured by then too; before that the page
+  // is shorter and the footer wrongly reads as close.
+  useEffect(() => {
+    let observer;
+    const timer = setTimeout(() => {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          setIsNear(true);
+          observer.disconnect();
+        },
+        // On phones the footer starts ~1200px below the fold, so stay under that.
+        { rootMargin: "800px 0px" },
+      );
+      observer.observe(footerRef.current);
+    }, ENTRANCE_MS);
+
+    return () => {
+      clearTimeout(timer);
+      observer?.disconnect();
+    };
+  }, []);
 
   const inputIntensity = useMotionValue(0);
 
@@ -86,8 +123,14 @@ export function Footer() {
   }, [inputIntensity]);
 
   return (
-    <footer className="footer">
-      <FooterShape speedMultiplier={smoothSpeed} inputIntensity={inputIntensity} />
+    <footer className="footer" ref={footerRef}>
+      {isNear && (
+        <FooterShape
+          speedMultiplier={smoothSpeed}
+          inputIntensity={inputIntensity}
+          isOnScreen={isOnScreen}
+        />
+      )}
     </footer>
   );
 }
