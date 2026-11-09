@@ -77,7 +77,8 @@ function Shape({ speedMultiplier, inputIntensity }) {
 
     const geo = new THREE.ExtrudeGeometry(shapes, {
       depth: 2,
-      curveSegments: 96,
+      // Looks the same as higher values at this size, but builds far faster.
+      curveSegments: 16,
       bevelEnabled: true,
       bevelThickness: 0.9,
       bevelSize: 0.15,

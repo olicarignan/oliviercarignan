@@ -2,42 +2,34 @@ import { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useInView, useSpring, useMotionValue } from "motion/react";
 
-// Three.js is over half of the page's JS and its setup blocks the main thread,
-// so it loads separately, once the footer is getting close.
-const FooterShape = dynamic(
-  () => import("./FooterShape").then((mod) => mod.FooterShape),
-  { ssr: false },
-);
+// Three.js is over half of the page's JS, so it loads separately.
+const loadFooterShape = () =>
+  import("./FooterShape").then((mod) => mod.FooterShape);
+const FooterShape = dynamic(loadFooterShape, { ssr: false });
 
-// Slightly longer than the page's staggered entrance animation.
-const ENTRANCE_MS = 2000;
+function entranceFinished() {
+  const entrance = document
+    .getAnimations()
+    .filter((animation) => animation.animationName?.startsWith("enter-"));
+  return Promise.allSettled(entrance.map((animation) => animation.finished));
+}
 
 export function Footer() {
   const footerRef = useRef(null);
-  const [isNear, setIsNear] = useState(false);
+  const [canBuildShape, setCanBuildShape] = useState(false);
   const isOnScreen = useInView(footerRef);
   const lastTouchY = useRef(null);
 
-  // Only start checking once the entrance has played, so the shape can't load
-  // on top of it.
+  // Download the shape straight away and build it as soon as the entrance has
+  // played, so it's ready before anyone reaches the footer.
   useEffect(() => {
-    let observer;
-    const timer = setTimeout(() => {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) return;
-          setIsNear(true);
-          observer.disconnect();
-        },
-        // On phones the footer starts ~1200px below the fold, so stay under that.
-        { rootMargin: "800px 0px" },
-      );
-      observer.observe(footerRef.current);
-    }, ENTRANCE_MS);
-
+    let cancelled = false;
+    loadFooterShape().catch(() => {});
+    entranceFinished().then(() => {
+      if (!cancelled) setCanBuildShape(true);
+    });
     return () => {
-      clearTimeout(timer);
-      observer?.disconnect();
+      cancelled = true;
     };
   }, []);
 
@@ -123,7 +115,7 @@ export function Footer() {
 
   return (
     <footer className="footer" ref={footerRef}>
-      {isNear && (
+      {canBuildShape && (
         <FooterShape
           speedMultiplier={smoothSpeed}
           inputIntensity={inputIntensity}
