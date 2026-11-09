@@ -2,10 +2,22 @@
   --columns: 4;
   --padding: 3.2rem;
   --gap: 0.8rem;
+  --content-max: 42rem;
+
+  /* Content column geometry, so full-bleed sliders can line up with it in CSS
+     and have their real size before any JS runs. */
+  --content-width: min(
+    100vw - var(--padding) * 2 - var(--gap) * 2,
+    var(--content-max)
+  );
+  --content-left: calc((100vw - var(--content-width)) / 2);
+  --column-width: calc(
+    (var(--content-width) - (var(--columns) - 1) * var(--gap)) / var(--columns)
+  );
 
   display: grid;
   margin-inline: auto;
-  max-width: calc(42rem + (var(--padding) * 2) + (var(--gap) * 2));
+  max-width: calc(var(--content-max) + (var(--padding) * 2) + (var(--gap) * 2));
   width: 100%;
   gap: var(--gap);
   grid-template-columns:
@@ -16,7 +28,7 @@
 
   @media (min-width: 700px) {
     --columns: 8;
-    max-width: calc(808px + (var(--padding) * 2) + (var(--gap) * 2));
+    --content-max: 808px;
   }
 
   .subgrid {

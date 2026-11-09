@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
@@ -77,7 +77,8 @@ function Shape({ speedMultiplier, inputIntensity }) {
 
     const geo = new THREE.ExtrudeGeometry(shapes, {
       depth: 2,
-      curveSegments: 96,
+      // Looks the same as higher values at this size, but builds far faster.
+      curveSegments: 16,
       bevelEnabled: true,
       bevelThickness: 0.9,
       bevelSize: 0.15,
@@ -147,12 +148,33 @@ function Shape({ speedMultiplier, inputIntensity }) {
   );
 }
 
-export function FooterShape({ speedMultiplier, inputIntensity }) {
+function FirstFrame({ onDrawn }) {
+  const called = useRef(false);
+
+  useFrame(() => {
+    if (called.current) return;
+    called.current = true;
+    // useFrame runs before the draw, so wait a frame for it to finish.
+    requestAnimationFrame(() => onDrawn());
+  });
+
+  return null;
+}
+
+export function FooterShape({ speedMultiplier, inputIntensity, isOnScreen }) {
+  const [hasDrawn, setHasDrawn] = useState(false);
+
+  // Always draw the first frame, even off-screen, so the shaders compile
+  // before the footer is seen. After that, only render while it's visible.
+  const frameloop = isOnScreen || !hasDrawn ? "always" : "never";
+
   return (
     <Canvas
       camera={{ position: [0, 0, 14], fov: 50 }}
-      className="footer__canvas"
+      className={`footer__canvas${hasDrawn ? " footer__canvas--ready" : ""}`}
+      frameloop={frameloop}
     >
+      <FirstFrame onDrawn={() => setHasDrawn(true)} />
       <SceneSetup />
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={2} color="#ffffff" />

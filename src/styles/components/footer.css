@@ -15,4 +15,10 @@
   height: 100% !important;
   pointer-events: auto !important;
   touch-action: pan-y;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+}
+
+.footer__canvas--ready {
+  opacity: 1;
 }

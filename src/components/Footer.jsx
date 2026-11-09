@@ -1,9 +1,31 @@
-import { useRef, useEffect } from "react";
-import { useSpring, useMotionValue } from "motion/react";
-import { FooterShape } from "./FooterShape";
+import { useRef, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { useInView, useSpring, useMotionValue } from "motion/react";
+import { entranceFinished } from "@/utils/entrance";
+
+// Three.js is over half of the page's JS, so it loads separately.
+const loadFooterShape = () =>
+  import("./FooterShape").then((mod) => mod.FooterShape);
+const FooterShape = dynamic(loadFooterShape, { ssr: false });
 
 export function Footer() {
+  const footerRef = useRef(null);
+  const [canBuildShape, setCanBuildShape] = useState(false);
+  const isOnScreen = useInView(footerRef);
   const lastTouchY = useRef(null);
+
+  // Download the shape straight away and build it as soon as the entrance has
+  // played, so it's ready before anyone reaches the footer.
+  useEffect(() => {
+    let cancelled = false;
+    loadFooterShape().catch(() => {});
+    entranceFinished().then(() => {
+      if (!cancelled) setCanBuildShape(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const inputIntensity = useMotionValue(0);
 
@@ -86,8 +108,14 @@ export function Footer() {
   }, [inputIntensity]);
 
   return (
-    <footer className="footer">
-      <FooterShape speedMultiplier={smoothSpeed} inputIntensity={inputIntensity} />
+    <footer className="footer" ref={footerRef}>
+      {canBuildShape && (
+        <FooterShape
+          speedMultiplier={smoothSpeed}
+          inputIntensity={inputIntensity}
+          isOnScreen={isOnScreen}
+        />
+      )}
     </footer>
   );
 }

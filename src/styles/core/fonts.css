@@ -93,6 +93,17 @@
     format("woff2");
 }
 
+/* Matched to Suisse's widths and line position, so the text doesn't re-wrap
+   or shift if the real font lands after it's on screen. */
+@font-face {
+  font-family: s-fallback;
+  src: local("Helvetica"), local("Arial");
+  size-adjust: 102.78%;
+  ascent-override: 96.32%;
+  descent-override: 30.16%;
+  line-gap-override: 0%;
+}
+
 :root {
-  --font-sans: "s", Helvetica, sans-serif;
+  --font-sans: "s", s-fallback, Helvetica, sans-serif;
 }

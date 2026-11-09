@@ -1,0 +1,57 @@
+/* The page entrance. It's plain CSS so it plays from first paint without
+   waiting for JS, and runs on the compositor so JS can't interrupt it. */
+
+@keyframes enter-text {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(6px);
+  }
+}
+
+@keyframes enter-media {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.enter {
+  animation: enter-text var(--enter-duration) var(--ease-out) backwards;
+  animation-delay: calc(
+    var(--enter-start, 0ms) + var(--i, 0) * var(--enter-step, 80ms)
+  );
+}
+
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.enter--media {
+  animation-name: enter-media;
+}
+
+/* Keep a brief fade, but no movement, blur or stagger. */
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: enter-fade 0.2s ease backwards;
+  }
+}
+
+.slider {
+  --enter-start: 320ms;
+  --enter-step: 60ms;
+}
+
+.thoughts {
+  --enter-start: 560ms;
+  --enter-step: 60ms;
+}
+
+/* Set from _document.jsx until the fonts arrive, so text doesn't swap and
+   re-wrap while it's animating. */
+.enter-hold .enter {
+  animation-play-state: paused;
+}

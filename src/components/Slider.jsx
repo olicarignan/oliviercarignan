@@ -1,60 +1,46 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion } from "motion/react";
 import { TextMorph } from "torph/react";
-const staggerItems = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.06,
-    },
-  },
-};
+import { entranceFinished } from "@/utils/entrance";
 
-const itemFadeIn = {
-  initial: { opacity: 0, y: 8 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1, ease: [0, 0.55, 0.45, 1] },
-  },
-};
+// The video is decoration: skip it on slow or data-saving connections and for
+// people who've asked for less motion. The still image stays in its place.
+function canPlayVideo() {
+  const connection = navigator.connection;
+  const isSlow = /2g|3g/.test(connection?.effectiveType ?? "");
+  const wantsLessMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  return !connection?.saveData && !isSlow && !wantsLessMotion;
+}
 
 export function Slider({ projects }) {
   const trackRef = useRef(null);
+  const [videosEnabled, setVideosEnabled] = useState(false);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [layout, setLayout] = useState({
     inset: 0,
     itemWidth: 0,
-    metaInset: 0,
     isMobile: false,
   });
   const dragDistRef = useRef(0);
   const scrollRafTicking = useRef(false);
 
   useEffect(() => {
+    // The sizes themselves live in CSS (slider.css); this only feeds the
+    // scroll logic below.
     const measure = () => {
       const subgrid = document.querySelector(".subgrid");
       if (!subgrid) return;
 
-      const style = getComputedStyle(subgrid);
-      const gap = parseFloat(style.columnGap) || 0;
       const rect = subgrid.getBoundingClientRect();
-      const columns =
-        parseInt(
-          getComputedStyle(document.querySelector(".grid")).getPropertyValue(
-            "--columns",
-          ),
-        ) || 4;
-      const colWidth = (rect.width - (columns - 1) * gap) / columns;
       const isDesktop = window.matchMedia("(min-width: 700px)").matches;
       if (isDesktop) {
         setLayout({
           inset: rect.left - 12,
           itemWidth: rect.width + 24,
-          metaInset: rect.left + 2 * (colWidth + gap),
           isMobile: false,
         });
       } else {
@@ -63,7 +49,6 @@ export function Slider({ projects }) {
         setLayout({
           inset: mobilePad,
           itemWidth: mobileItemWidth,
-          metaInset: rect.left,
           isMobile: true,
         });
       }
@@ -316,9 +301,20 @@ export function Slider({ projects }) {
     [layout.inset, handleItemClick],
   );
 
+  // Playing starts the download, so hold it until the entrance has finished.
+  useEffect(() => {
+    let cancelled = false;
+    entranceFinished().then(() => {
+      if (!cancelled && canPlayVideo()) setVideosEnabled(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || !videosEnabled) return;
     const items = track.querySelectorAll(".slider__item");
     const cleanups = [];
     items.forEach((item, i) => {
@@ -326,7 +322,7 @@ export function Slider({ projects }) {
       if (!video) return;
       if (i === activeIndex) {
         video.currentTime = 0;
-        video.play();
+        video.play().catch(() => {});
         const onReady = () => item.classList.add("slider__item--video-ready");
         if (video.readyState >= 2) {
           onReady();
@@ -340,13 +336,13 @@ export function Slider({ projects }) {
       }
     });
     return () => cleanups.forEach((fn) => fn());
-  }, [activeIndex]);
+  }, [activeIndex, videosEnabled]);
 
   const active = projects[activeIndex];
 
   return (
-    <motion.div className="slider" variants={staggerItems}>
-      <motion.div
+    <div className="slider">
+      <div
         className="slider__track"
         ref={trackRef}
         tabIndex={-1}
@@ -354,25 +350,19 @@ export function Slider({ projects }) {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        style={{
-          paddingLeft: `${layout.inset}px`,
-          paddingRight: `${layout.inset}px`,
-          scrollPaddingLeft: layout.isMobile ? undefined : `${layout.inset}px`,
-          touchAction: "pan-x pan-y",
-        }}
+        style={{ touchAction: "pan-x pan-y" }}
       >
         {projects.map((project, i) => {
           const img = project.featuredImage.responsiveImage;
           const videoUrl = project.video?.url;
           return (
-            <motion.div
+            <div
               key={project.id}
-              className={`slider__item${i === activeIndex ? " slider__item--active" : ""}`}
-              variants={itemFadeIn}
+              className={`slider__item enter enter--media${i === activeIndex ? " slider__item--active" : ""}`}
+              style={{ "--i": i }}
               role="button"
               tabIndex={0}
               aria-label={project.title}
-              style={{ width: `${layout.itemWidth}px` }}
               onClick={() => {
                 // Touch clicks (pointer capture doesn't apply to touch)
                 if (dragDistRef.current < 5) handleItemClick(i);
@@ -423,24 +413,20 @@ export function Slider({ projects }) {
                   />
                 )}
               </div>
-            </motion.div>
+            </div>
           );
         })}
-      </motion.div>
-      <motion.div
-        className="slider__meta"
-        style={{
-          paddingLeft: `${layout.metaInset}px`,
-          paddingRight: `${layout.metaInset}px`,
-        }}
-        variants={itemFadeIn}
+      </div>
+      <div
+        className="slider__meta enter enter--media"
+        style={{ "--i": projects.length }}
       >
         <div className="slider__meta-inner">
           <TextMorph as="h3">{active?.title}</TextMorph>
           <br />
           <TextMorph as="p">{active?.typeYear}</TextMorph>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
