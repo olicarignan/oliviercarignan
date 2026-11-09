@@ -23,8 +23,21 @@
   );
 }
 
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 .enter--media {
   animation-name: enter-media;
+}
+
+/* Keep a brief fade, but no movement, blur or stagger. */
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: enter-fade 0.2s ease backwards;
+  }
 }
 
 .slider {
