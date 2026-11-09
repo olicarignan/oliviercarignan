@@ -115,12 +115,9 @@
       transition: opacity 0.3s ease;
     }
 
-    &.slider__item--active video {
+    /* Only once it has a frame to show, so it fades in over the still image. */
+    &.slider__item--video-ready video {
       opacity: 1;
-    }
-
-    &.slider__item--video-ready img {
-      opacity: 0;
     }
   }
 

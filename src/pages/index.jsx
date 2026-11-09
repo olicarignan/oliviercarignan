@@ -98,7 +98,16 @@ export default function Home({ data }) {
           in my work.
         </p>
         <p className="enter" style={{ "--i": 3 }}>
-          Co-Founder &amp; Product Lead at{" "}
+          Currently at{" "}
+          <a
+            href="https://shopify.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Shopify
+          </a>
+          <br />
+          Co-Founder of{" "}
           <a
             href="https://brunch.work"
             target="_blank"
@@ -117,8 +126,8 @@ export default function Home({ data }) {
         <div className="clients enter" style={{ "--i": 8 }}>
           <h3>Selected Clients</h3>
           <p>
-            Apple, WØRKS Studio, Evenko, RTINGS.com, REF Digital, ARC Health,
-            LG2, Webisoft
+            Apple, Shopify, WØRKS Studio, Evenko, RTINGS.com, REF Digital, ARC
+            Health, LG2, Webisoft
           </p>
         </div>
 

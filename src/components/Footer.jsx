@@ -1,18 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useInView, useSpring, useMotionValue } from "motion/react";
+import { entranceFinished } from "@/utils/entrance";
 
 // Three.js is over half of the page's JS, so it loads separately.
 const loadFooterShape = () =>
   import("./FooterShape").then((mod) => mod.FooterShape);
 const FooterShape = dynamic(loadFooterShape, { ssr: false });
-
-function entranceFinished() {
-  const entrance = document
-    .getAnimations()
-    .filter((animation) => animation.animationName?.startsWith("enter-"));
-  return Promise.allSettled(entrance.map((animation) => animation.finished));
-}
 
 export function Footer() {
   const footerRef = useRef(null);

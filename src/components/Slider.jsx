@@ -2,9 +2,22 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { TextMorph } from "torph/react";
+import { entranceFinished } from "@/utils/entrance";
+
+// The video is decoration: skip it on slow or data-saving connections and for
+// people who've asked for less motion. The still image stays in its place.
+function canPlayVideo() {
+  const connection = navigator.connection;
+  const isSlow = /2g|3g/.test(connection?.effectiveType ?? "");
+  const wantsLessMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  return !connection?.saveData && !isSlow && !wantsLessMotion;
+}
 
 export function Slider({ projects }) {
   const trackRef = useRef(null);
+  const [videosEnabled, setVideosEnabled] = useState(false);
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [layout, setLayout] = useState({
@@ -288,9 +301,20 @@ export function Slider({ projects }) {
     [layout.inset, handleItemClick],
   );
 
+  // Playing starts the download, so hold it until the entrance has finished.
+  useEffect(() => {
+    let cancelled = false;
+    entranceFinished().then(() => {
+      if (!cancelled && canPlayVideo()) setVideosEnabled(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || !videosEnabled) return;
     const items = track.querySelectorAll(".slider__item");
     const cleanups = [];
     items.forEach((item, i) => {
@@ -298,7 +322,7 @@ export function Slider({ projects }) {
       if (!video) return;
       if (i === activeIndex) {
         video.currentTime = 0;
-        video.play();
+        video.play().catch(() => {});
         const onReady = () => item.classList.add("slider__item--video-ready");
         if (video.readyState >= 2) {
           onReady();
@@ -312,7 +336,7 @@ export function Slider({ projects }) {
       }
     });
     return () => cleanups.forEach((fn) => fn());
-  }, [activeIndex]);
+  }, [activeIndex, videosEnabled]);
 
   const active = projects[activeIndex];
 
